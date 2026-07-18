@@ -43,13 +43,14 @@ class HmsPatient(models.Model):
     department_id = fields.Many2one("hms.department")
     capacity = fields.Integer(related="department_id.capacity")
     doctors_ids = fields.Many2many("hms.doctors", string="Doctors")
-    doctors_names = fields.Char(string="Doctor Name", compute="_compute_doctors_names")
+    doctors_names = fields.Char(
+        string="Doctor Name", compute="_compute_doctors_names")
+    logs_ids = fields.One2many('hms.patient.log', 'patient_id')
 
     @api.depends("birth_date")
     def _compute_age(self):
         today = date.today()
         for rec in self:
-            print(type(rec.birth_date))
             if rec.birth_date:
                 age = (
                     today.year
@@ -89,8 +90,53 @@ class HmsPatient(models.Model):
                     }
                 }
 
-    @api.constrains("pcr", "cr_ratio")
-    def cr_ratio_checker(self):
+    @api.model
+    def write(self, vals):
+        description = "change"
         for rec in self:
-            if rec.pcr and rec.cr_ratio == 0:
-                raise ValidationError("please enter CR RAtio")
+            for key in vals:
+                description += f"  {key}({getattr(rec,key)}) ==> ({vals[key]})"
+        replacement = {'first_name': 'First Name',
+                       'last_name': 'Last Name',
+                       'birth_date': 'Birth Date',
+                       'department_id': 'Department',
+                       'doctors_ids': 'Doctors',
+                       'blood_type': 'Blood Type',
+                       'cr_ratio': 'CR Ratio',
+                       'pcr': 'PCR'}
+        for old, new in replacement.items():
+            test = test.replace(old, new)
+        record = {''}
+        self.env['hms.patient.log'].create()
+        res = super(HmsPatient, self).write(vals)
+        return res
+
+
+@api.constrains("pcr", "cr_ratio")
+def cr_ratio_checker(self):
+    for rec in self:
+        if rec.pcr and rec.cr_ratio == 0:
+            raise ValidationError("please enter CR RAtio")
+
+
+# change  first_name(abdelsala) == > (abdelsalam)
+# last_name(saye) == > (sayed)
+# birth_date(2005-12-12) == > (2007-03-24)
+# department_id(hms.department(3,)) == > (1)
+# doctors_ids(hms.doctors()) == > ([[4, 4], [4, 2]])
+# blood_type(b_m) == > (o_p)
+# cr_ratio(3.0) == > (55)
+# pcr(True) == > (False)
+
+
+class HmsPatientLog(models.Model):
+    _name = "hms.patient.log"
+    _description = "Patient Log"
+
+    patient_id = fields.Many2one('hms.patient')
+    description = fields.Char()
+
+    @api.model
+    def create(self, vals_list):
+        print(vals_list)
+        return super().create(vals_list)

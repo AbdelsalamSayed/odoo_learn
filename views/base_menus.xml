@@ -3,7 +3,7 @@
     <menuitem
         id='hms_root_menu'
         name='HMS'
-        web_icon='hms,static/description/images.png' />
+        web_icon='hms,static/description/icon.png' />
 
     <menuitem
         id='patient_menu'
