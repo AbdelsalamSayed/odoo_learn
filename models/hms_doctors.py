@@ -1,4 +1,5 @@
 from odoo import models, fields, api
+from odoo.exceptions import ValidationError
 
 
 class HmsDoctors(models.Model):
@@ -21,3 +22,12 @@ class HmsDoctors(models.Model):
                 rec.full_name = f"{rec.first_name} {rec.last_name}".strip()
             else:
                 rec.full_name = ""
+
+    def unlink(self):
+        for rec in self:
+            if len(rec.patient_ids) > 0:
+                raise ValidationError(
+                    "This doctor treats certain patients, so you cannot delete him"
+                )
+
+        return super().unlink()

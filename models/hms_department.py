@@ -1,4 +1,5 @@
 from odoo import models, fields, api
+from odoo.exceptions import ValidationError
 
 
 class HmsDepartment(models.Model):
@@ -19,3 +20,15 @@ class HmsDepartment(models.Model):
     def _compute_capacity(self):
         for rec in self:
             rec.capacity = len(rec.patient_ids)
+
+    def unlink(self):
+        for rec in self:
+            if len(rec.patient_ids) > 0:
+                raise ValidationError(
+                    "This department contains some patient; you cannot delete it"
+                )
+            elif len(rec.doctors_ids) > 0:
+                raise ValidationError(
+                    "This department contains some doctors; you cannot delete it"
+                )
+        return super().unlink()

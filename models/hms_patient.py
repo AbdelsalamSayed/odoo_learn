@@ -1,4 +1,4 @@
-from odoo import models, fields, api
+from odoo import models, fields, api, Command
 from datetime import date
 from odoo.exceptions import ValidationError
 
@@ -45,6 +45,9 @@ class HmsPatient(models.Model):
     doctors_ids = fields.Many2many("hms.doctors", string="Doctors")
     doctors_names = fields.Char(string="Doctor Name", compute="_compute_doctors_names")
     logs_ids = fields.One2many("hms.patient.log", "patient_id")
+    archived_state = fields.Selection(
+        [("active", "Active"), ("archived", "Archived")], default="active"
+    )
 
     @api.depends("birth_date")
     def _compute_age(self):
@@ -91,6 +94,7 @@ class HmsPatient(models.Model):
 
     def write(self, vals):
         log_create = []
+        state_changed = False
         for rec in self:
             description = ""
             for key in vals:
@@ -118,8 +122,14 @@ class HmsPatient(models.Model):
                     description += "\tHistory changed"
                 elif key == "logs_ids":
                     description += "\tMake edit in the logs"
+                elif key == "archived_state" and vals[key] == "archived":
+                    self.write(
+                        {"doctors_ids": [Command.clear()], "department_id": False}
+                    )
+                    description += (
+                        f"\t{key} changed from ({getattr(rec, key)}) to ({vals[key]})"
+                    )
                 else:
-                    print(key)
                     description += (
                         f"\t{key} changed from ({getattr(rec, key)}) to ({vals[key]})"
                     )
@@ -163,6 +173,17 @@ class HmsPatient(models.Model):
             self.env["hms.patient.log"].create(record)
         return res
 
+    def unlink(self):
+        for rec in self:
+            if len(rec.logs_ids) > 1:
+                raise ValidationError(
+                    "This patient has records, so you can't delete them, just archive them"
+                )
+                return
+            else:
+                res = super().unlink()
+        return res
+
     @api.constrains("pcr", "cr_ratio")
     def cr_ratio_checker(self):
         for rec in self:
@@ -184,16 +205,6 @@ class HmsPatient(models.Model):
     def state_serious(self):
         for rec in self:
             rec.states = "serious"
-
-
-# change  first_name(abdelsala) == > (abdelsalam)
-# last_name(saye) == > (sayed)
-# birth_date(2005-12-12) == > (2007-03-24)
-# department_id(hms.department(3,)) == > (1)
-# doctors_ids(hms.doctors()) == > ([[4, 4], [4, 2]])
-# blood_type(b_m) == > (o_p)
-# cr_ratio(3.0) == > (55)
-# pcr(True) == > (False)
 
 
 class HmsPatientLog(models.Model):
