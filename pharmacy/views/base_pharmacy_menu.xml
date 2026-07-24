@@ -1,0 +1,6 @@
+<odoo>
+    <data>
+        <menuitem id='main_pharmacy_menu'
+            name='Pharmacy' />
+    </data>
+</odoo>

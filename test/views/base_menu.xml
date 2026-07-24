@@ -1,0 +1,15 @@
+<odoo>
+    <menuitem
+        id="real_rstate_root_menu"
+        name="Real State"
+    />
+    <menuitem
+        id="properties_menu"
+        name="Properties Menu"
+        parent="real_rstate_root_menu" />
+    <menuitem
+        id="owner_menu"
+        name="Owner Menu"
+        parent="real_rstate_root_menu"
+        groups='test.property_manager_group' />
+</odoo>

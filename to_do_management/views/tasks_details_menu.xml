@@ -1,0 +1,16 @@
+<odoo>
+
+    <record id='details_tree' model='ir.ui.view'>
+        <field name="name">details tree</field>
+        <field name="model">tasks.details</field>
+        <field name="arch" type='xml'>
+            <tree editable='bottom'>
+                <field name="day_date" />
+                <field name="description" />
+                <field name="taken_time" />
+            </tree>
+        </field>
+    </record>
+
+
+</odoo>

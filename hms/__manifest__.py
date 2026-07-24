@@ -9,6 +9,7 @@
         "views/patient_menus.xml",
         "views/doctors_menus.xml",
         "views/department_menus.xml",
+
     ],
     "application": True,
 }

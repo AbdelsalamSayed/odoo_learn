@@ -1,0 +1,8 @@
+.test table thead > tr > th {
+    background-color: aquamarine !important;
+    color: blueviolet !important;
+}
+.test table thead > tr > th:nth-child(2) {
+    width: 250px !important ;
+    
+}

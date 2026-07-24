@@ -1,0 +1,101 @@
+<odoo>
+    <data>
+
+
+        <record id='items_tree_view' model='ir.ui.view'>
+            <field name="name">Items</field>
+            <field name="model">items</field>
+            <field name="arch" type='xml'>
+                <tree>
+                    <field name="barcode" />
+                    <field name="name" />
+                    <field name="price" />
+                    <field name="exp_date" />
+                    <field name="inventory" />
+                </tree>
+            </field>
+        </record>
+
+        <record id='items_form_view' model='ir.ui.view'>
+            <field name="name">
+                test
+            </field>
+            <field name="model">items</field>
+            <field name="arch" type='xml'>
+                <form>
+                    <sheet>
+                        <div>
+                            <label for='barcode' />
+                            <h1>
+                                <field name="barcode" />
+                            </h1>
+                            <label for='name' />
+                            <h3>
+                                <field name="name" />
+                            </h3>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="cost" />
+                                <field name="price" />
+                                <field name="profit" />
+                                <field name="unit_of_measure" />
+                            </group>
+                            <group>
+                                <field name="exp_date" />
+                                <field name="amount" />
+                                <field name="inventory" />
+                                <field name="number_of_units" invisible='unit_of_measure=="pack"' />
+                            </group>
+                        </group>
+                        <group>
+                            <field name="description" />
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id='items_purchase_order_form_view' model='ir.ui.view'>
+            <field name="name">items</field>
+            <field name="model">items</field>
+            <field name="arch" type='xml'>
+                <form>
+                    <sheet>
+                        <group>
+                            <group>
+
+                                <field name="barcode" />
+
+                                <field name="name" />
+
+                                <field name="cost" />
+                                <field name="price" />
+                                <field name="profit" />
+                                <field name="unit_of_measure" />
+                            </group>
+                            <group>
+                                <field name="exp_date" />
+                                <field name="amount" />
+                                <field name="inventory" />
+                                <field name="number_of_units" invisible='unit_of_measure=="pack"' />
+                            </group>
+                        </group>
+                        <group>
+                            <field name="description" />
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id='items_menu_action' model='ir.actions.act_window'>
+            <field name="name">Items Menu Action</field>
+            <field name="res_model">items</field>
+        </record>
+        <menuitem id='items_menu'
+            name='Items'
+            parent='main_pharmacy_menu'
+            action='items_menu_action' />
+    </data>
+</odoo>

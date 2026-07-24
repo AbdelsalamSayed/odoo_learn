@@ -13,7 +13,8 @@ class HmsDoctors(models.Model):
     department_id = fields.Many2one(
         "hms.department", string="Department", required=True
     )
-    patient_ids = fields.Many2many("hms.patient", string="Patients", readonly=True)
+    patient_ids = fields.Many2many(
+        "hms.patient", string="Patients", readonly=True)
 
     @api.depends("first_name", "last_name")
     def _compute_name(self):
@@ -27,7 +28,7 @@ class HmsDoctors(models.Model):
         for rec in self:
             if len(rec.patient_ids) > 0:
                 raise ValidationError(
-                    "This doctor treats certain patients, so you cannot delete him"
+                    f"Dr/{rec.full_name} treats certain patients, so you cannot delete him"
                 )
 
         return super().unlink()
