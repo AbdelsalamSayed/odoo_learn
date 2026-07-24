@@ -1,2 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_items,access_items,model_items,,1,1,1,1
+access_purchase_order,access_purchase_order,model_purchase_order,,1,1,1,1
+access_purchase_order_lines,access_purchase_order_lines,model_purchase_order_lines,,1,1,1,1
+access_inventory,access_inventory,model_inventory,,1,1,1,1

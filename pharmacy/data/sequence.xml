@@ -1,0 +1,14 @@
+<odoo>
+    <data>
+        <record id='barcode_sequence' model='ir.sequence'>
+            <field name="name">Barcode Sequence</field>
+            <field name="code">barcode_sequence_code</field>
+        </record>
+
+        <record id='purchase_order_number_sequence' model='ir.sequence'>
+            <field name="name">purchase order number sequence</field>
+            <field name="code">purchase_order_number_sequence_code</field>
+            <field name='prefix'>PUR-</field>
+        </record>
+    </data>
+</odoo>

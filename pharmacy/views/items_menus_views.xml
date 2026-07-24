@@ -10,8 +10,6 @@
                     <field name="barcode" />
                     <field name="name" />
                     <field name="price" />
-                    <field name="exp_date" />
-                    <field name="inventory" />
                 </tree>
             </field>
         </record>
@@ -39,45 +37,9 @@
                                 <field name="cost" />
                                 <field name="price" />
                                 <field name="profit" />
+                            </group>
+                            <group>
                                 <field name="unit_of_measure" />
-                            </group>
-                            <group>
-                                <field name="exp_date" />
-                                <field name="amount" />
-                                <field name="inventory" />
-                                <field name="number_of_units" invisible='unit_of_measure=="pack"' />
-                            </group>
-                        </group>
-                        <group>
-                            <field name="description" />
-                        </group>
-                    </sheet>
-                </form>
-            </field>
-        </record>
-
-        <record id='items_purchase_order_form_view' model='ir.ui.view'>
-            <field name="name">items</field>
-            <field name="model">items</field>
-            <field name="arch" type='xml'>
-                <form>
-                    <sheet>
-                        <group>
-                            <group>
-
-                                <field name="barcode" />
-
-                                <field name="name" />
-
-                                <field name="cost" />
-                                <field name="price" />
-                                <field name="profit" />
-                                <field name="unit_of_measure" />
-                            </group>
-                            <group>
-                                <field name="exp_date" />
-                                <field name="amount" />
-                                <field name="inventory" />
                                 <field name="number_of_units" invisible='unit_of_measure=="pack"' />
                             </group>
                         </group>

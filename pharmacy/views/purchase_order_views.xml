@@ -1,52 +1,32 @@
 <odoo>
     <data>
-
-
         <record id='purchase_order_tree_view' model='ir.ui.view'>
-            <field name="name">Items</field>
-            <field name="model">items</field>
+            <field name="name">purchase order</field>
+            <field name="model">purchase.order</field>
             <field name="arch" type='xml'>
                 <tree>
-                    <field name="" />
+                    <field name="purchase_number" />
                 </tree>
             </field>
         </record>
 
         <record id='purchase_order_form_view' model='ir.ui.view'>
-            <field name="name">
-                test
-            </field>
-            <field name="model">items</field>
+            <field name="name">purchase order</field>
+            <field name="model">purchase.order</field>
             <field name="arch" type='xml'>
                 <form>
                     <sheet>
                         <div>
-                            <label for='barcode' />
+                            <label for='purchase_number' />
                             <h1>
-                                <field name="barcode" />
+                                <field name="purchase_number" />
                             </h1>
-                            <label for='name' />
-                            <h3>
-                                <field name="name" />
-                            </h3>
                         </div>
-                        <group>
-                            <group>
-                                <field name="cost" />
-                                <field name="price" />
-                                <field name="profit" />
-                                <field name="unit_of_measure" />
-                            </group>
-                            <group>
-                                <field name="exp_date" />
-                                <field name="amount" />
-                                <field name="inventory" />
-                                <field name="number_of_units" invisible='unit_of_measure=="pack"' />
-                            </group>
-                        </group>
-                        <group>
-                            <field name="description" />
-                        </group>
+                        <notebook>
+                            <page string="Lines">
+                                <field name="lines_ids" />
+                            </page>
+                        </notebook>
                     </sheet>
                 </form>
             </field>
@@ -54,11 +34,11 @@
 
         <record id='purchase_order_menu_action' model='ir.actions.act_window'>
             <field name="name">Purchase Order Menu Action</field>
-            <field name="res_model">items</field>
+            <field name="res_model">purchase.order</field>
         </record>
         <menuitem id='purchase_order_menu'
             name='Purchase Order'
             parent='main_pharmacy_menu'
-            action='items_menu_action' />
+            action='purchase_order_menu_action' />
     </data>
 </odoo>
