@@ -8,6 +8,7 @@
         "views/base_pharmacy_menu.xml",
         "views/items_menus_views.xml",
         "views/purchase_order_views.xml",
+        "views/history_view.xml",
         "views/purchase_order_lines_views.xml",
         "data/sequence.xml",
     ],

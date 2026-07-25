@@ -7,7 +7,7 @@ class PurchaseOrderLines(models.Model):
     _rec_name = "purchase_id"
 
     purchase_id = fields.Many2one("purchase.order")
-    barcode = fields.Many2one(related="items_id", store=True, readonly=False)
+    barcode = fields.Integer(related="items_id.barcode", store=True, readonly=False)
     items_id = fields.Many2one("items", required=True)
     price = fields.Float(related="items_id.price", store=True, readonly=False)
     cost = fields.Float(related="items_id.cost", store=True, readonly=False)

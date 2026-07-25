@@ -15,6 +15,8 @@ class Items(models.Model):
     )
     number_of_units = fields.Integer(default=1)
 
+    _sql_constraints = [("unique_name", "unique(name)", "this item already exists")]
+
     @api.depends("price", "cost")
     def _compute_profit_calc(self):
         for rec in self:
@@ -31,3 +33,10 @@ class Items(models.Model):
             {"item_id": res.id, "unit_number": res.number_of_units, "quantity": "0"}
         )
         return res
+
+    def action_open_history(self):
+        action = self.env["ir.actions.actions"]._for_xml_id("pharmacy.history_action")
+        view_id = self.env.ref("pharmacy.purchase_order_lines_history_tree_view").id
+        action["domain"] = [("items_id", "=", self.id)]
+        action["views"] = [[view_id, "tree"]]
+        return action

@@ -11,9 +11,36 @@
                     <field name="cost" />
                     <field name="exp_date" />
                     <field name="quantity" />
+
+                </tree>
+            </field>
+        </record>
+        <record id='purchase_order_lines_history_tree_view' model='ir.ui.view'>
+            <field name="name">purchase order history lines</field>
+            <field name="model">purchase.order.lines</field>
+            <field name="arch" type='xml'>
+                <tree>
+                    <field name="create_date" />
+                    <field name="purchase_id" />
+                    <field name="barcode" />
+                    <field name="items_id" />
+                    <field name="price" />
+                    <field name="cost" />
+                    <field name="exp_date" />
+                    <field name="quantity" />
                 </tree>
             </field>
         </record>
 
+        <record id='history_action' model='ir.actions.act_window'>
+            <field name="name">History Action</field>
+            <field name='res_model'>purchase.order.lines</field>
+            <field name="view_id" ref='purchase_order_lines_history_tree_view' />
+
+        </record>
+        <menuitem id='history_menu'
+            name='History'
+            parent='main_pharmacy_menu'
+            action='history_action' />
     </data>
 </odoo>

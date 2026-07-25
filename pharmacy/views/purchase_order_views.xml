@@ -24,7 +24,8 @@
                         </div>
                         <notebook>
                             <page string="Lines">
-                                <field name="lines_ids" />
+                                <field name="lines_ids"
+                                    context="{'tree_view_ref':'pharmacy.purchase_order_lines_tree_view'}" />
                             </page>
                         </notebook>
                     </sheet>
