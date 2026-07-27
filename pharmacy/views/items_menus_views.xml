@@ -10,6 +10,8 @@
                     <field name="barcode" />
                     <field name="name" />
                     <field name="price" />
+                    <field name="inventory_quantity_pack" />
+                    <field name="inventory_quantity_unit" />
                 </tree>
             </field>
         </record>
@@ -43,6 +45,7 @@
                                 <field name="profit" />
                             </group>
                             <group>
+                                <field name="vendor_id" />
                                 <field name="unit_of_measure" />
                                 <field name="number_of_units" invisible='unit_of_measure=="pack"' />
                             </group>
@@ -50,18 +53,25 @@
                         <group>
                             <field name="description" />
                         </group>
+                        <group>
+                            <field name="create_date" readonly='1' />
+                            <field name="create_uid" readonly='1' />
+                        </group>
                     </sheet>
                 </form>
             </field>
         </record>
 
         <record id='items_menu_action' model='ir.actions.act_window'>
-            <field name="name">Items Menu Action</field>
+            <field name="name">Items Menu</field>
             <field name="res_model">items</field>
         </record>
+        <menuitem id='items_main_menu'
+            name='Items'
+            parent='main_pharmacy_menu' />
         <menuitem id='items_menu'
             name='Items'
-            parent='main_pharmacy_menu'
+            parent='items_main_menu'
             action='items_menu_action' />
     </data>
 </odoo>

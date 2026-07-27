@@ -10,5 +10,15 @@
             <field name="code">purchase_order_number_sequence_code</field>
             <field name='prefix'>PUR-</field>
         </record>
+        <record id='positive_adjustment_number_sequence' model='ir.sequence'>
+            <field name="name">positive adjustment number sequence</field>
+            <field name="code">positive_adjustment_number_sequence_code</field>
+            <field name="prefix">P-ADJ-</field>
+        </record>
+        <record id='negative_adjustment_number_sequence' model='ir.sequence'>
+            <field name="name">negative adjustment number sequence</field>
+            <field name="code">negative_adjustment_number_sequence_code</field>
+            <field name="prefix">N-ADJ-</field>
+        </record>
     </data>
 </odoo>

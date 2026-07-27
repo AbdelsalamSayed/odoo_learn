@@ -11,4 +11,5 @@ class Inventory(models.Model):
 
     @api.depends("unit_number", "quantity")
     def _compute_inventory(self):
-        self.inventory = self.quantity * self.unit_number
+        for rec in self:
+            rec.inventory = rec.quantity * rec.unit_number

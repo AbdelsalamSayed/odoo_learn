@@ -6,6 +6,9 @@
             <field name="arch" type='xml'>
                 <tree>
                     <field name="purchase_number" />
+                    <field name="vendor_id" />
+                    <field name="create_date" />
+                    <field name="create_uid" />
                 </tree>
             </field>
         </record>
@@ -22,10 +25,13 @@
                                 <field name="purchase_number" />
                             </h1>
                         </div>
+                        <group>
+                            <field name="vendor_id" />
+                        </group>
                         <notebook>
                             <page string="Lines">
                                 <field name="lines_ids"
-                                    context="{'tree_view_ref':'pharmacy.purchase_order_lines_tree_view'}" />
+                                    context="{'tree_view_ref':'pharmacy.items_lines_tree_view'}" />
                             </page>
                         </notebook>
                     </sheet>
@@ -34,7 +40,7 @@
         </record>
 
         <record id='purchase_order_menu_action' model='ir.actions.act_window'>
-            <field name="name">Purchase Order Menu Action</field>
+            <field name="name">Purchase Order Menu</field>
             <field name="res_model">purchase.order</field>
         </record>
         <menuitem id='purchase_order_menu'

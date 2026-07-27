@@ -1,0 +1,39 @@
+<odoo>
+    <data>
+        <record id='adjustment_form' model='ir.ui.view'>
+            <field name="name">Adjustment</field>
+            <field name="model">adjustment</field>
+            <field name="arch" type='xml'>
+                <form>
+                    <sheet>
+                        <div>
+                            <label for='adjustment_number' />
+                            <h1>
+                                <field name="adjustment_number" />
+                            </h1>
+                        </div>
+                        <group>
+                            <field name="adjustment_type" />
+                        </group>
+                        <notebook>
+                            <page string="Lines">
+                                <field name="lines_ids"
+                                    context="{'tree_view_ref':'pharmacy.purchase_order_lines_tree_view'}" />
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id='adjustment_menu_action' model='ir.actions.act_window'>
+            <field name="name">Adjustment</field>
+            <field name="res_model">adjustment</field>
+            <field name="view_mode">form</field>
+        </record>
+        <menuitem id='adjustment_menu'
+            name='Adjustment'
+            parent='items_main_menu'
+            action='adjustment_menu_action' />
+    </data>
+</odoo>

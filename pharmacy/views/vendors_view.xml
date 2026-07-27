@@ -1,0 +1,41 @@
+<odoo>
+    <data>
+        <record id="vendors_tree" model="ir.ui.view">
+            <field name="name">Vendors</field>
+            <field name="model">vendors</field>
+            <field name="arch" type='xml'>
+                <tree>
+                    <field name="vendor_name" />
+                </tree>
+            </field>
+        </record>
+        <record id="vendors_form" model="ir.ui.view">
+            <field name="name">Vendors</field>
+            <field name="model">vendors</field>
+            <field name="arch" type='xml'>
+                <form>
+                    <sheet>
+                        <div name='button_box' class='oe_button_box'>
+                            <button type='object' name='open_vendor_items_list' string='Items'
+                                icon='fa-list' />
+                        </div>
+                        <group>
+                            <field name="vendor_name" />
+                            <field name="balance" />
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+
+        <record id='vendors_menu_action' model='ir.actions.act_window'>
+            <field name="name">Vendors</field>
+            <field name="res_model">vendors</field>
+        </record>
+        <menuitem id='vendors_menu'
+            name='Vendors'
+            parent='main_pharmacy_menu'
+            action='vendors_menu_action' />
+    </data>
+</odoo>

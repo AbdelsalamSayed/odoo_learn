@@ -9,8 +9,8 @@ class PurchaseOrder(models.Model):
 
     cost = fields.Float()
     price = fields.Float()
-    amount = fields.Integer()
-    lines_ids = fields.One2many("purchase.order.lines", "purchase_id")
+    lines_ids = fields.One2many("items.lines", "purchase_id")
+    vendor_id = fields.Many2one('vendors', required=True)
 
     @api.model
     def create(self, vals_list):
@@ -22,6 +22,9 @@ class PurchaseOrder(models.Model):
         for rec in res.lines_ids:
             domain = [("item_id", "=", rec.items_id.id)]
             inventory.search(domain).quantity += rec.quantity
+        for rec in res.lines_ids:
+            rec.receipt_number = res.purchase_number
+            res.vendor_id.balance += rec.cost*rec.quantity
         return res
 
 

@@ -1,0 +1,67 @@
+<odoo>
+    <data>
+        <record id='items_lines_tree_view' model='ir.ui.view'>
+            <field name="name">items lines</field>
+            <field name="model">items.lines</field>
+            <field name="arch" type='xml'>
+                <tree editable='bottom'>
+                    <field name="barcode" />
+                    <field name="items_id"
+                        domain="[('vendor_id', '=', parent.vendor_id)]" />
+                    <field name="price" />
+                    <field
+                        name="cost" />
+                    <field name="exp_date" />
+                    <field name="quantity" />
+                </tree>
+            </field>
+        </record>
+        <record id='items_lines_history_tree_view' model='ir.ui.view'>
+            <field name="name">items history lines</field>
+            <field name="model">items.lines</field>
+            <field name="arch" type='xml'>
+                <tree>
+                    <field name="create_date" />
+                    <field name="create_uid" />
+                    <field name="receipt_number" />
+                    <field name="barcode" />
+                    <field name="items_id" />
+                    <field name="price" />
+                    <field name="cost" />
+                    <field name="exp_date" />
+                    <field name="quantity" />
+                </tree>
+            </field>
+        </record>
+
+        <record id='item_history_search' model='ir.ui.view'>
+            <field name="name">history search</field>
+            <field name="model">items.lines</field>
+            <field name="arch" type='xml'>
+                <search>
+                    <field name="barcode" />
+                    <field name="items_id" />
+                    <filter name='positive_adjustment' string='Positive Adjustment'
+                        domain="[('receipt_number','ilike','P-ADj-')]" />
+                    <filter name='negative_adjustment' string='Negative Adjustment'
+                        domain="[('receipt_number','ilike','N-ADj-')]" />
+                    <filter name='purchase_order' string='Purchase Order'
+                        domain="[('receipt_number','ilike','PUR-')]" />
+
+                </search>
+            </field>
+        </record>
+        <record id='history_action' model='ir.actions.act_window'>
+            <field name="name">History</field>
+            <field name='res_model'>items.lines</field>
+            <field name="view_id" ref='items_lines_history_tree_view' />
+            <field name="view_mode">tree</field>
+
+
+        </record>
+        <menuitem id='history_menu'
+            name='History'
+            parent='items_main_menu'
+            action='history_action' />
+    </data>
+</odoo>
