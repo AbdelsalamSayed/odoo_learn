@@ -1,0 +1,6 @@
+<odoo>
+    <data>
+        <menuitem id='hr_system_main_menu'
+            name='Hr System' />
+    </data>
+</odoo>

@@ -18,7 +18,7 @@
                         <notebook>
                             <page string="Lines">
                                 <field name="lines_ids"
-                                    context="{'tree_view_ref':'pharmacy.purchase_order_lines_tree_view'}" />
+                                    context="{'tree_view_ref':'pharmacy.test_items_lines_tree_view'}" />
                             </page>
                         </notebook>
                     </sheet>
@@ -34,6 +34,8 @@
         <menuitem id='adjustment_menu'
             name='Adjustment'
             parent='items_main_menu'
-            action='adjustment_menu_action' />
+            action='adjustment_menu_action'
+            groups='pharmacy.manager_perm_group' />
+
     </data>
 </odoo>

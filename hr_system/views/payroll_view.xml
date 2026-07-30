@@ -1,0 +1,68 @@
+<odoo>
+    <data>
+        <record id='payroll_tree_view' model='ir.ui.view'>
+            <field name="name">payroll tree view</field>
+            <field name="model">employee.payroll</field>
+            <field name="arch" type='xml'>
+                <tree>
+                    <field name="employee_id" />
+                    <field name="month" />
+                    <field name="year" />
+                    <field name="net_salary" />
+                </tree>
+            </field>
+        </record>
+        <record id='payroll_form_view' model='ir.ui.view'>
+            <field name="name">payroll form view</field>
+            <field name="model">employee.payroll</field>
+            <field name="arch" type='xml'>
+                <form>
+                    <sheet>
+                        <group>
+                            <label for='employee_id' string='Employee' />
+                            <div class='o_row'>
+                                <label for='employee_id' string='' />
+                                <h3>
+                                    <field name="employee_id" />
+                                </h3>
+                                <label for='month' string='Payroll Month' />
+                                <h3>
+                                    <field name="month" />
+                                </h3>
+                                <label for='year' string='Payroll Year' />
+                                <h3>
+                                    <field name="year" />
+                                </h3>
+                            </div>
+                        </group>
+                        <group>
+                            <group>
+                                <field name="employee_shift_hours" />
+                                <field name="basic_salary" />
+                                <field name="total_worked_hours" />
+                            </group>
+                            <group>
+                                <field name="employee_bonus" />
+                                <field name="employee_deduction" />
+                                <field name="present_vacation" />
+                            </group>
+                            <group>
+                                <field name="net_salary" />
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id='payroll_menu_action' model='ir.actions.act_window'>
+            <field name="name">Payroll</field>
+            <field name="res_model">employee.payroll</field>
+        </record>
+        <menuitem id='payroll_menu'
+            name='Payroll'
+            parent='hr_system_main_menu'
+            action='payroll_menu_action'
+            groups='hr_system.ceo_groups_record' />
+
+    </data>
+</odoo>

@@ -1,0 +1,11 @@
+<odoo>
+    <data>
+        <record id='ceo_groups_record' model='res.groups'>
+            <field name="name">CEO Group</field>
+        </record>
+        <record id='employee_perm_group' model='res.groups'>
+            <field name="name">Employee Group</field>
+        </record>
+
+    </data>
+</odoo>

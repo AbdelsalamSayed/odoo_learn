@@ -4,6 +4,7 @@
     "version": "17.0.0.1.0",
     "depends": [],
     "data": [
+        "security/security.xml",
         "security/ir.model.access.csv",
         "views/base_pharmacy_menu.xml",
         "views/items_menus_views.xml",

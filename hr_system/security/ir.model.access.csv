@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_employee,access_employee,model_employee,hr_system.employee_perm_group,1,0,0,0
+access_general_employee,access_general_employee,model_employee,hr_system.ceo_groups_record,1,1,1,1
+access_departments,access_departments,model_departments,,1,1,1,1
+access_roles,access_roles,model_roles,,1,1,1,1
+access_employee_attendance,access_employee_attendance,model_employee_attendance,,1,1,1,1
+access_employee_payroll,access_employee_payroll,model_employee_payroll,,1,1,1,1

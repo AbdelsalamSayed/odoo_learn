@@ -1,0 +1,116 @@
+<odoo>
+    <data>
+        <record id='employee_tree_view' model='ir.ui.view'>
+            <field name="name">Employees</field>
+            <field name="model">employee</field>
+            <field name="arch" type='xml'>
+                <tree>
+                    <field name="employee_image" options='{"size":[60,60]}'
+                        widget='image' />
+                    <field name="employee_id" />
+                    <field name="employee_name" />
+                    <field name="department_id" />
+                    <field name="employee_number" />
+                    <field name="employee_birth_date" />
+                </tree>
+            </field>
+        </record>
+        <record id='employee_form_view' model='ir.ui.view'>
+            <field name="name">Employees</field>
+            <field name="model">employee</field>
+            <field name="arch" type='xml'>
+                <form>
+                    <sheet>
+                        <div name='button_box' class='oe_button_box'>
+                            <button type='object' name='open_attendance_logs' string='attendance'
+                                icon='fa-list' />
+                            <button type='object' name='open_payroll_logs' string='Payroll'
+                                icon='fa-list' />
+                        </div>
+                        <header>
+                            <field name="employee_image" options='{"size":[60,60]}' widget='image' />
+                            <div>
+                                <label for='employee_id' />
+                                <h1>
+                                    <field name="employee_id" invisible='employee_id==0' />
+                                </h1>
+                            </div>
+                        </header>
+                        <group>
+                            <group string="Basic information">
+                                <field name="employee_name" />
+                                <field name="user_acc" />
+                                <field name="employee_number" />
+                                <field name="employee_birth_date" />
+                                <field name="employee_basic_salary" />
+                                <label for='employee_shift_from' string='Shift' />
+                                <div class='o_row'>
+                                    <label for='employee_shift_from' string='From' />
+                                    <field name="employee_shift_from" widget='float_time' />
+                                    <field name="employee_shift_from_period" />
+                                    <label for='employee_shift_to' string='To' />
+                                    <field name="employee_shift_to" widget='float_time' />
+                                    <field name="employee_shift_to_period" />
+                                </div>
+                                <field name="employee_shift_hours" />
+                            </group>
+                            <group string="Work information">
+                                <field name="department_id" />
+                                <field name="employee_role" readonly='not department_id' />
+                                <field name="employee_manager"
+                                    domain="[('employee_role.perm','in',['owner', 'manager'])]" />
+                                <field name="total_worked_hours" />
+                                <label for='end_sat' string='Weekend' />
+                                <div class='d-flex flex-row gap-4 align-items-start'>
+                                    <div class='d-flex flex-column align-items-center'>
+                                        <label for='end_sat' string='Sat' />
+                                        <field name="end_sat" />
+                                    </div>
+                                    <div class='d-flex flex-column align-items-center'>
+                                        <label for='end_sun' string='Sun' />
+                                        <field name="end_sun" />
+                                    </div>
+                                    <div class='d-flex flex-column align-items-center'>
+                                        <label for='end_mon' string='Mon' />
+                                        <field name="end_mon" />
+                                    </div>
+                                    <div class='d-flex flex-column align-items-center'>
+                                        <label for='end_tus' string='Tus' />
+                                        <field name="end_tus" />
+                                    </div>
+                                    <div class='d-flex flex-column align-items-center'>
+                                        <label for='end_wed' string='Wed' />
+                                        <field name="end_wed" />
+                                    </div>
+                                    <div class='d-flex flex-column align-items-center'>
+                                        <label for='end_thu' string='Thu' />
+                                        <field name="end_thu" />
+                                    </div>
+                                    <div class='d-flex flex-column align-items-center'>
+                                        <label for='end_fri' string='Fri' />
+                                        <field name="end_fri" />
+                                    </div>
+                                </div>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id='employee_model_view_action' model='ir.actions.act_window'>
+            <field name="name">Employees</field>
+            <field name='res_model'>employee</field>
+        </record>
+        <menuitem id='hr_employee_menu'
+            name='Employees'
+            parent='hr_system_main_menu'
+            action='employee_model_view_action'
+        />
+        <record id='my_employee_rule' model='ir.rule'>
+            <field name="name">My Employee Rule</field>
+            <field name="model_id" ref='model_employee' />
+            <field name="groups" eval="[(4,ref('hr_system.employee_perm_group'))]" />
+            <field name="domain_force">[('user_acc','=',user.id)]</field>
+        </record>
+    </data>
+</odoo>

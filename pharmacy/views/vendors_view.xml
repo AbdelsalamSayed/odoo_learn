@@ -36,6 +36,7 @@
         <menuitem id='vendors_menu'
             name='Vendors'
             parent='main_pharmacy_menu'
-            action='vendors_menu_action' />
+            action='vendors_menu_action'
+            groups='pharmacy.manager_perm_group' />
     </data>
 </odoo>

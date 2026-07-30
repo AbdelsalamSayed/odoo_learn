@@ -1,0 +1,40 @@
+<odoo>
+    <data>
+        <record id='departments_tree_view' model='ir.ui.view'>
+            <field name="name">Departments</field>
+            <field name="model">departments</field>
+            <field name="arch" type='xml'>
+                <tree>
+                    <field name="department_name" />
+                    <field name="employee_ids" widget='many2many_tags' />
+                </tree>
+            </field>
+        </record>
+        <record id='departments_form_view' model='ir.ui.view'>
+            <field name="name">Departments</field>
+            <field name="model">departments</field>
+            <field name="arch" type='xml'>
+                <form>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="department_name" />
+                            </group>
+                            <group>
+                                <field name="employee_ids" widget='many2many_tags' />
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id='departments_model_view_action' model='ir.actions.act_window'>
+            <field name="name">Department</field>
+            <field name='res_model'>departments</field>
+        </record>
+        <menuitem id='hr_departments_menu'
+            name='Departments'
+            parent='hr_system_main_menu'
+            action='departments_model_view_action' />
+    </data>
+</odoo>
