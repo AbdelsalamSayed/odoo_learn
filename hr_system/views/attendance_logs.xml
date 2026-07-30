@@ -38,6 +38,18 @@
                 </form>
             </field>
         </record>
+        <record id="attendance_view_search" model="ir.ui.view">
+            <field name="name">attendance view search</field>
+            <field name="model">employee.attendance</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="employee_id" groups='hr_system.ceo_groups_record' />
+                    <field name="log_date" />
+                    <filter name="log_date" string="Group by Date"
+                        context="{'group_by': 'log_date'}" />
+                </search>
+            </field>
+        </record>
         <record id='attendance_logs_action' model='ir.actions.act_window'>
             <field name="name">Attendance</field>
             <field name="res_model">employee.attendance</field>
@@ -47,6 +59,13 @@
             parent='hr_system_main_menu'
             action='attendance_logs_action'
             groups='hr_system.ceo_groups_record' />
+
+        <record id='my_attendace_rule' model='ir.rule'>
+            <field name="name">My Attendance Rule</field>
+            <field name="model_id" ref='model_employee_attendance' />
+            <field name="groups" eval="[(4,ref('hr_system.employee_perm_group'))]" />
+            <field name="domain_force">[('employee_id.user_acc','=',user.id)]</field>
+        </record>
     </data>
 
 </odoo>

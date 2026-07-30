@@ -5,6 +5,11 @@
             <field name="model">employee.payroll</field>
             <field name="arch" type='xml'>
                 <tree>
+                    <header>
+                        <button type='object' name='generate_all_payrolls' string='Generat All'
+                            class='btn-primary' display='always'
+                            groups='hr_system.ceo_groups_record' />
+                    </header>
                     <field name="employee_id" />
                     <field name="month" />
                     <field name="year" />
@@ -54,6 +59,21 @@
                 </form>
             </field>
         </record>
+        <record id="employee_payroll_view_search" model="ir.ui.view">
+            <field name="name">employee payroll view search</field>
+            <field name="model">employee.payroll</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="employee_id" groups='hr_system.ceo_groups_record' />
+                    <field name="month" />
+                    <field name="year" />
+                    <filter name="month" string="Group by month" context="{'group_by': 'month'}" />
+                    <filter name="year" string="Group by year" context="{'group_by': 'year'}" />
+                    <filter name="employee_id" string="Group by employee"
+                        context="{'group_by': 'employee_id'}" groups='hr_system.ceo_groups_record' />
+                </search>
+            </field>
+        </record>
         <record id='payroll_menu_action' model='ir.actions.act_window'>
             <field name="name">Payroll</field>
             <field name="res_model">employee.payroll</field>
@@ -63,6 +83,12 @@
             parent='hr_system_main_menu'
             action='payroll_menu_action'
             groups='hr_system.ceo_groups_record' />
+        <record id='my_payroll_rule' model='ir.rule'>
+            <field name="name">My Payroll Rule</field>
+            <field name="model_id" ref='model_employee_payroll' />
+            <field name="groups" eval="[(4,ref('hr_system.employee_perm_group'))]" />
+            <field name="domain_force">[('employee_id.user_acc','=',user.id)]</field>
+        </record>
 
     </data>
 </odoo>
