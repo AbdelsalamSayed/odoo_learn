@@ -6,9 +6,9 @@
     "data": [
         "security/security.xml",
         "security/ir.model.access.csv",
-        "data/sequence.xml",
         "views/main_system_menu.xml",
         "views/employees_view.xml",
+        "views/employee_loan.xml",
         "views/departments_view.xml",
         "views/roles_view.xml",
         "views/attendance_logs.xml",

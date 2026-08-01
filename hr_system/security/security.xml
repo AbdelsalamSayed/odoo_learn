@@ -6,6 +6,12 @@
         <record id='employee_perm_group' model='res.groups'>
             <field name="name">Employee Group</field>
         </record>
+        <record id='hr_perm_group' model='res.groups'>
+            <field name="name">HR Group</field>
+        </record>
+        <record id='manager_perm_group' model='res.groups'>
+            <field name="name">Manager Group</field>
+        </record>
 
     </data>
 </odoo>

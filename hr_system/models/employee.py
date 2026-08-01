@@ -8,10 +8,10 @@ class Employee(models.Model):
     _description = "employee_model_for_hr_system"
 
     _rec_name = "employee_name"
-    employee_id = fields.Integer(string="Employee ID", readonly=True)
-    user_acc = fields.Many2one("res.users")
+    user_account = fields.Many2one("res.users")
     employee_name = fields.Char(required=True)
-    department_id = fields.Many2one("departments", string="Department", required=True)
+    department_id = fields.Many2one(
+        "departments", string="Department", required=True)
     employee_role = fields.Many2one("roles", required=True)
     employee_manager = fields.Many2one("employee")
     employee_number = fields.Char()
@@ -20,6 +20,7 @@ class Employee(models.Model):
     employee_image = fields.Image()
     employee_shift_from = fields.Float(default=8)
     employee_shift_to = fields.Float(default=4)
+    active = fields.Boolean(default=True)
     employee_shift_hours = fields.Float(
         string="Total hours", compute="_compute_shift_hours"
     )
@@ -39,9 +40,8 @@ class Employee(models.Model):
         default="pm",
         required=True,
     )
-    attendance_ids = fields.One2many("employee.attendance", "employee_id")
-    total_worked_hours = fields.Float(compute="_compute_total_worked_hours")
-    this_month = fields.Integer(default=fields.Date.today().month, readonly=True)
+    this_month = fields.Integer(
+        default=fields.Date.today().month, readonly=True)
     end_sat = fields.Boolean()
     end_sun = fields.Boolean()
     end_mon = fields.Boolean()
@@ -63,12 +63,24 @@ class Employee(models.Model):
         store=True,
     )
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals_list):
         res = super(Employee, self).create(vals_list)
-        res.employee_id = self.env["ir.sequence"].next_by_code("employee_id_sequence")
-        if res.employee_role.perm not in ["owner"] and not res.employee_manager:
-            raise ValidationError("You must enter employee manager")
+        for rec in res:
+            if len(self.env['employee'].search([('user_account.id', '=', rec.user_account.id)])) > 1:
+                raise ValidationError(
+                    'This user account already has an employee account')
+            if rec.employee_role.perm not in ["owner"] and not res.employee_manager:
+                raise ValidationError("You must enter employee manager")
+        return res
+
+    def write(self, vals):
+        res = super(Employee, self).write(vals)
+        if 'user_account' in vals:
+            for rec in self:
+                if self.env['employee'].search_count([('user_account.id', '=', rec.user_account.id)]) > 1:
+                    raise ValidationError(
+                        "This user account is already linked to an employee")
         return res
 
     @api.depends(
@@ -115,21 +127,13 @@ class Employee(models.Model):
             copy_weekend["6"] = True if rec.end_sun else False
             rec.weekend = copy_weekend
 
-    @api.depends("attendance_ids")
-    def _compute_total_worked_hours(self):
-        for rec in self:
-            if rec.attendance_ids:
-                for log in rec.attendance_ids:
-                    rec.total_worked_hours += log.employee_shift_hours
-            else:
-                rec.total_worked_hours = 0
-
     def open_attendance_logs(self):
         action = self.env["ir.actions.actions"]._for_xml_id(
             "hr_system.attendance_logs_action"
         )
         view_id = self.env.ref("hr_system.attendance_view_tree").id
-        action["domain"] = [("employee_id.user_acc", "=", self.user_acc.id)]
+        action["domain"] = [
+            ("employee_id.user_account", "=", self.user_account.id)]
         action["views"] = [[view_id, "tree"]]
         return action
 
@@ -137,5 +141,28 @@ class Employee(models.Model):
         action = self.env["ir.actions.actions"]._for_xml_id(
             "hr_system.payroll_menu_action"
         )
-        action["domain"] = [("employee_id.user_acc", "=", self.user_acc.id)]
+        action["domain"] = [
+            ("employee_id.user_account", "=", self.user_account.id)]
+        return action
+
+    def open_loan_logs(self):
+        action = self.env["ir.actions.actions"]._for_xml_id(
+            "hr_system.employee_loan_action"
+        )
+        action["domain"] = [
+            ("employee_id.user_account", "=", self.user_account.id)]
+
+        return action
+
+    def open_my_profile(self):
+        my_profile = self.env['employee'].search(
+            [('user_account', '=', self.env.user.id)]).id
+        if not my_profile:
+            raise ValidationError("No employee record is linked to your user account. "
+                                  "Please contact HR.")
+        action = self.env['ir.actions.actions']._for_xml_id(
+            'hr_system.employee_model_view_action')
+        view_id = self.env.ref('hr_system.employee_form_view').id
+        action['res_id'] = my_profile
+        action['views'] = [[view_id, 'form']]
         return action

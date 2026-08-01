@@ -10,6 +10,7 @@ class Roles(models.Model):
     lower_name = fields.Char(compute='_compute_lower_name', store=True)
     perm = fields.Selection([
         ('owner', 'Owner'),
+        ('hr', 'HR'),
         ('manager', 'Manager'),
         ('employee', 'employee'),
     ], required=True, default='employee')

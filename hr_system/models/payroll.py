@@ -11,10 +11,8 @@ class Payroll(models.Model):
     employee_shift_hours = fields.Float(
         related="employee_id.employee_shift_hours", store=True
     )
-    basic_salary = fields.Float(related="employee_id.employee_basic_salary", store=True)
-    employee_attendance_logs = fields.One2many(
-        "employee.attendance", "employee_id", related="employee_id.attendance_ids"
-    )
+    basic_salary = fields.Float(
+        related="employee_id.employee_basic_salary", store=True)
     total_worked_hours = fields.Float(readonly=True)
     month = fields.Selection(
         [
@@ -38,7 +36,8 @@ class Payroll(models.Model):
     employee_bonus = fields.Float()
     employee_deduction = fields.Float()
     week_end_day = fields.Integer()
-    present_vacation = fields.Float(compute="employee_net_salary_calc", store=True)
+    present_vacation = fields.Float(
+        compute="employee_net_salary_calc", store=True)
 
     @api.depends("employee_id", "month", "employee_bonus", "employee_deduction")
     def employee_net_salary_calc(self):
@@ -50,14 +49,14 @@ class Payroll(models.Model):
                 for day in rec.employee_id.weekend:
                     if rec.employee_id.weekend[day]:
                         for days in range(
-                            1, calendar.monthrange(int(rec.year), int(rec.month))[1] + 1
+                            1, calendar.monthrange(
+                                int(rec.year), int(rec.month))[1] + 1
                         ):
                             if calendar.weekday(
                                 int(rec.year), int(rec.month), days
                             ) == int(day):
                                 weekend_days += 1
-                for log in rec.employee_attendance_logs:
-                    print(log.employee_shift_hours)
+                for log in self.env['employee.attendance'].search([('employee_id', '=', rec.employee_id.id)]):
                     if str(log.log_date.month) == rec.month:
                         worked_hours += log.employee_shift_hours
                     if log.is_weekend:
@@ -75,22 +74,15 @@ class Payroll(models.Model):
                     + rec.employee_bonus
                     + paid_leave
                 )
-                print(paid_leave)
             else:
                 rec.present_vacation = 0
 
     def generate_all_payrolls(self):
         records = self.env["employee"].search([])
         for rec in records:
-            if not self.env["employee.payroll"].search(
-                [
-                    ("employee_id", "=", rec.employee_id),
-                    ("year", "=", fields.Date.today().year),
-                    ("month", "=", fields.Date.today().month),
-                ]
-            ):
+            if not self.env["employee.payroll"].search([("employee_id", "=", rec.id), ("year", "=", fields.Date.today().year), ("month", "=", fields.Date.today().month)]):
                 self.env["employee.payroll"].create(
                     {
-                        "employee_id": rec.employee_id,
+                        "employee_id": rec.id,
                     }
                 )

@@ -1,0 +1,73 @@
+<odoo>
+    <data>
+        <record id="employee_loan_view_tree" model="ir.ui.view">
+            <field name="name">employee loan view tree</field>
+            <field name="model">employee.loan</field>
+            <field name="arch" type="xml">
+                <tree decoration-danger='loan_state=="rejected"'
+                    decoration-success='loan_state=="approved"'>
+                    <button type='object' name='employee_loan_approve' string='approve'
+                        class='btn-success' icon='fa-check'
+                        invisible='loan_state != "pending" or user_account == uid'
+                        groups='hr_system.ceo_groups_record,hr_system.hr_perm_group' />
+                    <button type='object' name='employee_loan_reject' string='reject'
+                        class='btn-danger' icon='fa-times'
+                        invisible='loan_state != "pending" or user_account == uid'
+                        groups='hr_system.ceo_groups_record,hr_system.hr_perm_group' />
+                    <field name="employee_id" />
+                    <field name="start_loan_month" />
+                    <field name="loan_amount" />
+                    <field name="loan_repayment_period" />
+                    <field name="loan_paid" readonly='True' />
+                    <field name="loan_state" readonly='True' />
+                    <field name="user_account" invisible='1' />
+                </tree>
+            </field>
+        </record>
+        <record id="employee_loan_view_form" model="ir.ui.view">
+            <field name="name">employee loan view form</field>
+            <field name="model">employee.loan</field>
+            <field name="arch" type="xml">
+                <form edit='0'>
+                    <sheet>
+                        <widget name='web_ribbon' title='Rejected' bg_color='text-bg-danger'
+                            invisible='loan_state in ["paid","pending","approved"]' />
+                        <widget name='web_ribbon' title='approved' bg_color='text-bg-success'
+                            invisible='loan_state in ["paid","rejected","pending"]' />
+                        <widget name='web_ribbon' title='Pending' bg_color='text-bg-info'
+                            invisible='loan_state in ["paid","rejected","approved"]' />
+                        <widget name='web_ribbon' title='Paid' bg_color='text-bg-primary'
+                            invisible='loan_state in ["rejected","pending","approved"]' />
+                        <group>
+                            <field name="employee_id"
+                                groups='hr_system.ceo_groups_record,hr_system.hr_perm_group' />
+                            <field name="start_loan_month" />
+                            <field name="loan_amount" />
+                            <field name="loan_repayment_period" />
+                            <field name="loan_paid" />
+                            <field name="loan_state" />
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="employee_loan_action" model="ir.actions.act_window">
+            <field name="name">employee loan action</field>
+            <field name="res_model">employee.loan</field>
+        </record>
+        <menuitem id='manager_employee_loan_menu'
+            name='Loan'
+            parent='hr_system_main_menu'
+            action='employee_loan_action'
+            groups='hr_system.ceo_groups_record,hr_system.hr_perm_group'
+            sequence='13'
+        />
+        <record id='my_loan_rule' model='ir.rule'>
+            <field name="name">My loan Rule</field>
+            <field name="model_id" ref='model_employee_loan' />
+            <field name="groups"
+                eval="[(4,ref('hr_system.employee_perm_group')),(4,ref('hr_system.manager_perm_group'))]" />
+            <field name="domain_force">[('employee_id.user_account','=',user.id)]</field>
+        </record>
+    </data>
+</odoo>

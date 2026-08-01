@@ -50,7 +50,7 @@ class Property(models.Model):
     ]
 
     def action(self):
-        print(self.env["property"].search([("bedrooms", "=", "1")]))
+        pass
 
     @api.depends("expected_price", "selling_price")
     def _compute_diff(self):

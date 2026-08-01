@@ -35,6 +35,7 @@
         <menuitem id='hr_departments_menu'
             name='Departments'
             parent='hr_system_main_menu'
-            action='departments_model_view_action' />
+            action='departments_model_view_action'
+            sequence='14' />
     </data>
 </odoo>

@@ -30,8 +30,6 @@ class ToDoTask(models.Model):
                         "Taken time must be grater than 0")
                 else:
                     total_taken_time += time.taken_time
-            print(total_taken_time)
-            print(rec.estimated_time)
             if total_taken_time > rec.estimated_time:
                 raise ValidationError(
                     "Total taken time must be equal or less than estimated time")

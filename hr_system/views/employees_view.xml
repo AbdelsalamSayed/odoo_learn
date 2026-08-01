@@ -5,9 +5,13 @@
             <field name="model">employee</field>
             <field name="arch" type='xml'>
                 <tree>
+                    <header>
+                        <button type='object' name='open_my_profile' string='My Profile'
+                            display='always' icon='fa-user-circle' />
+                    </header>
                     <field name="employee_image" options='{"size":[60,60]}'
                         widget='image' />
-                    <field name="employee_id" />
+                    <field name="id" string='Employee ID' />
                     <field name="employee_name" />
                     <field name="department_id" />
                     <field name="employee_number" />
@@ -15,34 +19,66 @@
                 </tree>
             </field>
         </record>
+        <record id="employee_view_search" model="ir.ui.view">
+            <field name="name">employee view search</field>
+            <field name="model">employee</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="id" />
+                    <field name="employee_name" />
+                    <field name="department_id" />
+                    <filter name='archived' string='Archived' domain='[("active","=",False)]'
+                        groups='hr_system.ceo_groups_record,hr_system.hr_perm_group' />
+                </search>
+            </field>
+        </record>
         <record id='employee_form_view' model='ir.ui.view'>
             <field name="name">Employees</field>
             <field name="model">employee</field>
             <field name="arch" type='xml'>
-                <form>
-                    <sheet>
+                <form create='0'>
+                    <sheet readonly='user_account == uid '>
                         <div name='button_box' class='oe_button_box'>
                             <button type='object' name='open_attendance_logs' string='attendance'
-                                icon='fa-list' />
+                                icon='fa-solid fa-calendar'
+                                invisible='user_account != uid ' />
                             <button type='object' name='open_payroll_logs' string='Payroll'
-                                icon='fa-list' />
+                                icon='fa-money'
+                                invisible='user_account != uid' />
+                            <button type='object' name='open_loan_logs' string='Loan'
+                                icon='fa-university' invisible='user_account != uid' />
+
+                            <button type='object' name='open_attendance_logs' string='attendance'
+                                icon='fa-solid fa-calendar'
+                                invisible='user_account == uid'
+                                groups='hr_system.ceo_groups_record,hr_system.hr_perm_group' />
+                            <button type='object' name='open_payroll_logs' string='Payroll'
+                                icon='fa-money'
+                                invisible='user_account == uid'
+                                groups='hr_system.ceo_groups_record,hr_system.hr_perm_group' />
+                            <button type='object' name='open_loan_logs' string='Loan'
+                                icon='fa-university'
+                                invisible='user_account == uid'
+                                groups='hr_system.ceo_groups_record,hr_system.hr_perm_group' />
                         </div>
                         <header>
                             <field name="employee_image" options='{"size":[60,60]}' widget='image' />
                             <div>
-                                <label for='employee_id' />
+                                <label for='id' string='Employee ID' />
                                 <h1>
-                                    <field name="employee_id" invisible='employee_id==0' />
+                                    <field name="id" invisible='id==0' />
                                 </h1>
                             </div>
                         </header>
                         <group>
                             <group string="Basic information">
                                 <field name="employee_name" />
-                                <field name="user_acc" />
+                                <field name="user_account" />
                                 <field name="employee_number" />
                                 <field name="employee_birth_date" />
-                                <field name="employee_basic_salary" />
+                                <field name="employee_basic_salary" invisible='user_account != uid' />
+                                <field name="employee_basic_salary" invisible='user_account == uid'
+                                    groups='hr_system.ceo_groups_record,hr_system.hr_perm_group' />
                                 <label for='employee_shift_from' string='Shift' />
                                 <div class='o_row'>
                                     <label for='employee_shift_from' string='From' />
@@ -53,13 +89,13 @@
                                     <field name="employee_shift_to_period" />
                                 </div>
                                 <field name="employee_shift_hours" />
+                                <field name="active" invisible='True' />
                             </group>
                             <group string="Work information">
                                 <field name="department_id" />
                                 <field name="employee_role" readonly='not department_id' />
                                 <field name="employee_manager"
                                     domain="[('employee_role.perm','in',['owner', 'manager'])]" />
-                                <field name="total_worked_hours" />
                                 <label for='end_sat' string='Weekend' />
                                 <div class='d-flex flex-row gap-4 align-items-start'>
                                     <div class='d-flex flex-column align-items-center'>
@@ -101,16 +137,12 @@
             <field name="name">Employees</field>
             <field name='res_model'>employee</field>
         </record>
-        <menuitem id='hr_employee_menu'
-            name='Employees'
-            parent='hr_system_main_menu'
-            action='employee_model_view_action'
-        />
-        <record id='my_employee_rule' model='ir.rule'>
-            <field name="name">My Employee Rule</field>
-            <field name="model_id" ref='model_employee' />
-            <field name="groups" eval="[(4,ref('hr_system.employee_perm_group'))]" />
-            <field name="domain_force">[('user_acc','=',user.id)]</field>
-        </record>
+        <menuitem
+            id="employee_menu"
+            name="Employees"
+            action="employee_model_view_action"
+            parent="hr_system_main_menu"
+            sequence="10" />
+
     </data>
 </odoo>

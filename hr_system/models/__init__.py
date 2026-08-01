@@ -1,1 +1,1 @@
-from . import employee, departments, roles, attendance, payroll
+from . import employee, departments, roles, attendance, payroll, employee_loan

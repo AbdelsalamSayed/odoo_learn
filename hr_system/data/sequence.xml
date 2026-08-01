@@ -1,8 +1,0 @@
-<odoo>
-    <data>
-        <record id='employee_id_sequence' model='ir.sequence'>
-            <field name="name">employee id sequence</field>
-            <field name='code'>employee_id_sequence</field>
-        </record>
-    </data>
-</odoo>

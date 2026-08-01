@@ -19,6 +19,7 @@
             name='roles'
             parent='hr_system_main_menu'
             action='roles_model_view_action'
-            groups='hr_system.ceo_groups_record' />
+            groups='hr_system.ceo_groups_record,hr_system.hr_perm_group'
+            sequence='15' />
     </data>
 </odoo>

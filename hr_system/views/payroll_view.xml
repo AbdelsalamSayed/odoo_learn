@@ -6,9 +6,9 @@
             <field name="arch" type='xml'>
                 <tree>
                     <header>
-                        <button type='object' name='generate_all_payrolls' string='Generat All'
-                            class='btn-primary' display='always'
-                            groups='hr_system.ceo_groups_record' />
+                        <button type='object' name='generate_all_payrolls' string='Generate All'
+                            class='btn-primary' icon='fa-cogs' display='always'
+                            groups='hr_system.ceo_groups_record,hr_system.hr_perm_group' />
                     </header>
                     <field name="employee_id" />
                     <field name="month" />
@@ -64,13 +64,15 @@
             <field name="model">employee.payroll</field>
             <field name="arch" type="xml">
                 <search>
-                    <field name="employee_id" groups='hr_system.ceo_groups_record' />
+                    <field name="employee_id"
+                        groups='hr_system.ceo_groups_record,hr_system.hr_perm_group' />
                     <field name="month" />
                     <field name="year" />
                     <filter name="month" string="Group by month" context="{'group_by': 'month'}" />
                     <filter name="year" string="Group by year" context="{'group_by': 'year'}" />
                     <filter name="employee_id" string="Group by employee"
-                        context="{'group_by': 'employee_id'}" groups='hr_system.ceo_groups_record' />
+                        context="{'group_by': 'employee_id'}"
+                        groups='hr_system.ceo_groups_record,hr_system.hr_perm_group' />
                 </search>
             </field>
         </record>
@@ -82,13 +84,15 @@
             name='Payroll'
             parent='hr_system_main_menu'
             action='payroll_menu_action'
-            groups='hr_system.ceo_groups_record' />
+            groups='hr_system.ceo_groups_record,hr_system.hr_perm_group'
+            sequence='12'
+        />
         <record id='my_payroll_rule' model='ir.rule'>
             <field name="name">My Payroll Rule</field>
             <field name="model_id" ref='model_employee_payroll' />
-            <field name="groups" eval="[(4,ref('hr_system.employee_perm_group'))]" />
-            <field name="domain_force">[('employee_id.user_acc','=',user.id)]</field>
+            <field name="groups"
+                eval="[(4,ref('hr_system.employee_perm_group')),(4,ref('hr_system.manager_perm_group'))]" />
+            <field name="domain_force">[('employee_id.user_account','=',user.id)]</field>
         </record>
-
     </data>
 </odoo>
