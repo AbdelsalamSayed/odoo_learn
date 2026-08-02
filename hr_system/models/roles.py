@@ -8,12 +8,7 @@ class Roles(models.Model):
     _rec_name = 'role_name'
     role_name = fields.Char(required=True)
     lower_name = fields.Char(compute='_compute_lower_name', store=True)
-    perm = fields.Selection([
-        ('owner', 'Owner'),
-        ('hr', 'HR'),
-        ('manager', 'Manager'),
-        ('employee', 'employee'),
-    ], required=True, default='employee')
+
     _sql_constraints = [
         ('unique_role_name', 'unique(lower_name)', "this role already exists")]
 

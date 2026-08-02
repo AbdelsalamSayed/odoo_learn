@@ -8,16 +8,29 @@ class Employee(models.Model):
     _description = "employee_model_for_hr_system"
 
     _rec_name = "employee_name"
-    user_account = fields.Many2one("res.users")
-    employee_name = fields.Char(required=True)
+    related_user = fields.Many2one("res.users")
+    employee_name = fields.Char(
+        related='related_user.name', readonly=False, store=True)
+    employee_email = fields.Char(
+        related='related_user.login', readonly=False, store=True)
     department_id = fields.Many2one(
-        "departments", string="Department", required=True)
-    employee_role = fields.Many2one("roles", required=True)
-    employee_manager = fields.Many2one("employee")
-    employee_number = fields.Char()
-    employee_basic_salary = fields.Float(required=True)
-    employee_birth_date = fields.Date()
-    employee_image = fields.Image()
+        "departments", string="Department", readonly=False, store=True, related='related_user.department')
+    employee_role = fields.Selection([
+        ('owner', 'CEO / Owner'),
+        ('hr', 'HR'),
+        ('manager', 'Manager'),
+        ('employee', 'employee'),
+    ], related='related_user.role', readonly=False, store=True)
+    employee_manager = fields.Many2one(
+        related='related_user.manager', readonly=False, store=True)
+    employee_number = fields.Char(
+        related='related_user.mobile_number', readonly=False, store=True)
+    employee_basic_salary = fields.Float(
+        related='related_user.salary', readonly=False, store=True, required=True)
+    employee_birth_date = fields.Date(
+        related='related_user.birth_date', readonly=False, store=True)
+    employee_image = fields.Binary(
+        related='related_user.image_1920', readonly=False, store=True)
     employee_shift_from = fields.Float(default=8)
     employee_shift_to = fields.Float(default=4)
     active = fields.Boolean(default=True)
@@ -63,22 +76,30 @@ class Employee(models.Model):
         store=True,
     )
 
+    def unlink(self):
+        users_to_delete = self.env['res.users'].search(
+            [('id', 'in', self.related_user.ids)])
+        res = super(Employee, self).unlink()
+        if users_to_delete:
+            users_to_delete.unlink()
+        return res
+
     @api.model_create_multi
     def create(self, vals_list):
         res = super(Employee, self).create(vals_list)
         for rec in res:
-            if len(self.env['employee'].search([('user_account.id', '=', rec.user_account.id)])) > 1:
+            if len(self.env['employee'].search([('related_user.id', '=', rec.related_user.id)])) > 1:
                 raise ValidationError(
                     'This user account already has an employee account')
-            if rec.employee_role.perm not in ["owner"] and not res.employee_manager:
+            if rec.employee_role not in ["owner"] and not res.employee_manager:
                 raise ValidationError("You must enter employee manager")
         return res
 
     def write(self, vals):
         res = super(Employee, self).write(vals)
-        if 'user_account' in vals:
+        if 'related_user' in vals:
             for rec in self:
-                if self.env['employee'].search_count([('user_account.id', '=', rec.user_account.id)]) > 1:
+                if self.env['employee'].search_count([('related_user.id', '=', rec.related_user.id)]) > 1:
                     raise ValidationError(
                         "This user account is already linked to an employee")
         return res
@@ -89,28 +110,41 @@ class Employee(models.Model):
         "employee_shift_from_period",
         "employee_shift_to_period",
     )
+    @api.depends('employee_shift_from', 'employee_shift_to', 'employee_shift_from_period', 'employee_shift_to_period')
     def _compute_shift_hours(self):
         for rec in self:
-            if not (rec.employee_shift_from or rec.employee_shift_to):
-                rec.employee_shift_hours = 0
-                continue
-            if rec.employee_shift_from not in range(
-                1, 13
-            ) or rec.employee_shift_to not in range(1, 13):
-                raise ValidationError("enter valid shift period")
-            if rec.employee_shift_from_period == rec.employee_shift_to_period:
-                if rec.employee_shift_from < rec.employee_shift_to:
-                    rec.employee_shift_hours = (
-                        rec.employee_shift_to - rec.employee_shift_from
-                    )
-                else:
-                    rec.employee_shift_hours = (
-                        12 - rec.employee_shift_from + 12 + rec.employee_shift_to
-                    )
-            else:
-                rec.employee_shift_hours = (
-                    12 - rec.employee_shift_from + rec.employee_shift_to
+            rec.employee_shift_hours = rec.shift_hours_calc(
+                rec.employee_shift_from, rec.employee_shift_to, rec.employee_shift_from_period, rec.employee_shift_to_period)
+
+    def shift_hours_calc(self, employee_shift_from, employee_shift_to, employee_shift_from_period, employee_shift_to_period):
+        if not (employee_shift_from or employee_shift_to):
+            employee_shift_hours = 0
+            return employee_shift_hours
+        if employee_shift_from not in range(
+            1, 13
+        ) or employee_shift_to not in range(1, 13):
+            raise ValidationError("enter valid shift period")
+        if employee_shift_from_period == employee_shift_to_period:
+            if employee_shift_from < employee_shift_to:
+                employee_shift_hours = (
+                    employee_shift_to - employee_shift_from
                 )
+            else:
+                employee_shift_hours = (
+                    12 - employee_shift_from + 12 + employee_shift_to
+                )
+        else:
+            employee_shift_hours = (
+                12 - employee_shift_from + employee_shift_to
+            )
+        return employee_shift_hours
+
+    @api.onchange('related_user')
+    def related_user_details_compute(self):
+        for rec in self:
+            rec.employee_image = rec.related_user.image_1920
+            rec.employee_email = rec.related_user.login
+            rec.employee_name = rec.related_user.name
 
     @api.depends(
         "end_sat", "end_sun", "end_mon", "end_tus", "end_wed", "end_thu", "end_fri"
@@ -133,7 +167,7 @@ class Employee(models.Model):
         )
         view_id = self.env.ref("hr_system.attendance_view_tree").id
         action["domain"] = [
-            ("employee_id.user_account", "=", self.user_account.id)]
+            ("employee_id.related_user", "=", self.related_user.id)]
         action["views"] = [[view_id, "tree"]]
         return action
 
@@ -142,7 +176,7 @@ class Employee(models.Model):
             "hr_system.payroll_menu_action"
         )
         action["domain"] = [
-            ("employee_id.user_account", "=", self.user_account.id)]
+            ("employee_id.related_user", "=", self.related_user.id)]
         return action
 
     def open_loan_logs(self):
@@ -150,13 +184,12 @@ class Employee(models.Model):
             "hr_system.employee_loan_action"
         )
         action["domain"] = [
-            ("employee_id.user_account", "=", self.user_account.id)]
-
+            ("employee_id.related_user", "=", self.related_user.id)]
         return action
 
     def open_my_profile(self):
         my_profile = self.env['employee'].search(
-            [('user_account', '=', self.env.user.id)]).id
+            [('related_user', '=', self.env.user.id)]).id
         if not my_profile:
             raise ValidationError("No employee record is linked to your user account. "
                                   "Please contact HR.")

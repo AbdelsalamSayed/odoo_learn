@@ -1,10 +1,11 @@
 <odoo>
     <data>
-        <record id='employee_tree_view' model='ir.ui.view'>
+        <record
+            id='employee_tree_view' model='ir.ui.view'>
             <field name="name">Employees</field>
             <field name="model">employee</field>
             <field name="arch" type='xml'>
-                <tree>
+                <tree create='0'>
                     <header>
                         <button type='object' name='open_my_profile' string='My Profile'
                             display='always' icon='fa-user-circle' />
@@ -19,7 +20,8 @@
                 </tree>
             </field>
         </record>
-        <record id="employee_view_search" model="ir.ui.view">
+        <record
+            id="employee_view_search" model="ir.ui.view">
             <field name="name">employee view search</field>
             <field name="model">employee</field>
             <field name="arch" type="xml">
@@ -32,33 +34,33 @@
                 </search>
             </field>
         </record>
-        <record id='employee_form_view' model='ir.ui.view'>
+        <record
+            id='employee_form_view' model='ir.ui.view'>
             <field name="name">Employees</field>
             <field name="model">employee</field>
             <field name="arch" type='xml'>
                 <form create='0'>
-                    <sheet readonly='user_account == uid '>
+                    <sheet readonly='related_user == uid '>
                         <div name='button_box' class='oe_button_box'>
                             <button type='object' name='open_attendance_logs' string='attendance'
                                 icon='fa-solid fa-calendar'
-                                invisible='user_account != uid ' />
+                                invisible='related_user != uid ' />
                             <button type='object' name='open_payroll_logs' string='Payroll'
                                 icon='fa-money'
-                                invisible='user_account != uid' />
+                                invisible='related_user != uid' />
                             <button type='object' name='open_loan_logs' string='Loan'
-                                icon='fa-university' invisible='user_account != uid' />
-
+                                icon='fa-university' invisible='related_user != uid' />
                             <button type='object' name='open_attendance_logs' string='attendance'
                                 icon='fa-solid fa-calendar'
-                                invisible='user_account == uid'
+                                invisible='related_user == uid'
                                 groups='hr_system.ceo_groups_record,hr_system.hr_perm_group' />
                             <button type='object' name='open_payroll_logs' string='Payroll'
                                 icon='fa-money'
-                                invisible='user_account == uid'
+                                invisible='related_user == uid'
                                 groups='hr_system.ceo_groups_record,hr_system.hr_perm_group' />
                             <button type='object' name='open_loan_logs' string='Loan'
                                 icon='fa-university'
-                                invisible='user_account == uid'
+                                invisible='related_user == uid'
                                 groups='hr_system.ceo_groups_record,hr_system.hr_perm_group' />
                         </div>
                         <header>
@@ -73,11 +75,11 @@
                         <group>
                             <group string="Basic information">
                                 <field name="employee_name" />
-                                <field name="user_account" />
+                                <field name="related_user" />
                                 <field name="employee_number" />
                                 <field name="employee_birth_date" />
-                                <field name="employee_basic_salary" invisible='user_account != uid' />
-                                <field name="employee_basic_salary" invisible='user_account == uid'
+                                <field name="employee_basic_salary" invisible='related_user != uid' />
+                                <field name="employee_basic_salary" invisible='related_user == uid'
                                     groups='hr_system.ceo_groups_record,hr_system.hr_perm_group' />
                                 <label for='employee_shift_from' string='Shift' />
                                 <div class='o_row'>
@@ -95,7 +97,7 @@
                                 <field name="department_id" />
                                 <field name="employee_role" readonly='not department_id' />
                                 <field name="employee_manager"
-                                    domain="[('employee_role.perm','in',['owner', 'manager'])]" />
+                                    domain="[('employee_role','in',['owner', 'manager'])]" />
                                 <label for='end_sat' string='Weekend' />
                                 <div class='d-flex flex-row gap-4 align-items-start'>
                                     <div class='d-flex flex-column align-items-center'>
@@ -133,15 +135,17 @@
                 </form>
             </field>
         </record>
-        <record id='employee_model_view_action' model='ir.actions.act_window'>
+        <record
+            id='employee_model_view_action' model='ir.actions.act_window'>
             <field name="name">Employees</field>
             <field name='res_model'>employee</field>
+            <field name="view_mode">tree,form</field>
         </record>
         <menuitem
             id="employee_menu"
-            name="Employees"
-            action="employee_model_view_action"
+            name="employees"
             parent="hr_system_main_menu"
+            action="employee_model_view_action"
             sequence="10" />
 
     </data>

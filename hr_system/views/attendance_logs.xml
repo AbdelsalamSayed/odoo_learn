@@ -66,14 +66,14 @@
             <field name="name">My Attendance Rule</field>
             <field name="model_id" ref='model_employee_attendance' />
             <field name="groups" eval="[(4,ref('hr_system.employee_perm_group'))]" />
-            <field name="domain_force">[('employee_id.user_account','=',user.id)]</field>
+            <field name="domain_force">[('employee_id.related_user','=',user.id)]</field>
         </record>
         <record id='my_manager_attendance_rule' model='ir.rule'>
             <field name="name">My Attendance Rule</field>
             <field name="model_id" ref='model_employee_attendance' />
             <field name="groups" eval="[(4,ref('hr_system.manager_perm_group'))]" />
             <field name="domain_force">
-                ['|',('employee_id.user_account','=',user.id),('employee_id.employee_manager.user_account','=',user.id)]</field>
+                ['|',('employee_id.related_user','=',user.id),('employee_id.employee_manager.related_user','=',user.id)]</field>
         </record>
     </data>
 

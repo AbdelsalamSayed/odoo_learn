@@ -27,18 +27,8 @@ class Attendance(models.Model):
     @api.depends('employee_shift_from', 'employee_shift_to', 'employee_shift_from_period', 'employee_shift_to_period')
     def _compute_shift_hours(self):
         for rec in self:
-            if not (rec.employee_shift_from or rec.employee_shift_to):
-                rec.employee_shift_hours = 0
-                continue
-            if rec.employee_shift_from not in range(1, 13) or rec.employee_shift_to not in range(1, 13):
-                raise ValidationError("enter valid shift period")
-            if rec.employee_shift_from_period == rec.employee_shift_to_period:
-                if rec.employee_shift_from < rec.employee_shift_to:
-                    rec.employee_shift_hours = rec.employee_shift_to-rec.employee_shift_from
-                else:
-                    rec.employee_shift_hours = 12 - rec.employee_shift_from + 12 + rec.employee_shift_to
-            else:
-                rec.employee_shift_hours = 12 - rec.employee_shift_from + rec.employee_shift_to
+            rec.employee_shift_hours = self.env['employee'].shift_hours_calc(
+                rec.employee_shift_from, rec.employee_shift_to, rec.employee_shift_from_period, rec.employee_shift_to_period)
 
     @api.onchange('log_date')
     def is_weekend_checker(self):

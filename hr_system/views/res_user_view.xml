@@ -1,0 +1,42 @@
+<odoo>
+    <record id='view_users_form' model='ir.ui.view'>
+        <field name="name">view users form</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref='base.view_users_form' />
+        <field name="arch" type='xml'>
+            <notebook>
+                <page string="Work information">
+                    <group>
+                        <field name="mobile_number" />
+                        <field name="birth_date" />
+                        <field name="department" />
+                        <field name="role" />
+                        <field name="manager" />
+                        <field name="salary" />
+                    </group>
+                </page>
+            </notebook>
+        </field>
+    </record>
+    <record id='hr_users_menu_item' model='ir.actions.act_window'>
+        <field name="name">Users</field>
+        <field name="res_model">res.users</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    <record id='hr_users_tree_menu_item' model='ir.actions.act_window.view'>
+        <field name="sequence" eval='1' />
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref='base.view_users_tree' />
+        <field name="act_window_id" ref='hr_users_menu_item' />
+    </record>
+    <record id='hr_users_form_menu_item' model='ir.actions.act_window.view'>
+        <field name="sequence" eval='1' />
+        <field name="view_mode">form</field>
+        <field name="view_id" ref='base.view_users_form' />
+        <field name="act_window_id" ref='hr_users_menu_item' />
+    </record>
+    <menuitem id='users_menu_item'
+        name='Users'
+        action='hr_users_menu_item'
+        groups='hr_system.hr_perm_group' />
+</odoo>

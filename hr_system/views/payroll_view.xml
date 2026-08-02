@@ -4,10 +4,15 @@
             <field name="name">payroll tree view</field>
             <field name="model">employee.payroll</field>
             <field name="arch" type='xml'>
-                <tree>
+                <tree create='0' delete='0'>
                     <header>
-                        <button type='object' name='generate_all_payrolls' string='Generate All'
-                            class='btn-primary' icon='fa-cogs' display='always'
+                        <button type='object' name='generate_all_payrolls'
+                            string='Generate This Month'
+                            class='btn-success' icon='fa-cogs' display='always'
+                            groups='hr_system.ceo_groups_record,hr_system.hr_perm_group' />
+                        <button type='object' name='unlink_all_payrolls'
+                            string='Delete This Month'
+                            class='btn-danger' icon='fa-cogs' display='always'
                             groups='hr_system.ceo_groups_record,hr_system.hr_perm_group' />
                     </header>
                     <field name="employee_id" />
@@ -21,22 +26,22 @@
             <field name="name">payroll form view</field>
             <field name="model">employee.payroll</field>
             <field name="arch" type='xml'>
-                <form>
+                <form create='0' delete='0'>
                     <sheet>
                         <group>
                             <label for='employee_id' string='Employee' />
                             <div class='o_row'>
                                 <label for='employee_id' string='' />
                                 <h3>
-                                    <field name="employee_id" />
+                                    <field name="employee_id" readonly='True' />
                                 </h3>
                                 <label for='month' string='Payroll Month' />
                                 <h3>
-                                    <field name="month" />
+                                    <field name="month" readonly='True' />
                                 </h3>
                                 <label for='year' string='Payroll Year' />
                                 <h3>
-                                    <field name="year" />
+                                    <field name="year" readonly='True' />
                                 </h3>
                             </div>
                         </group>
@@ -50,10 +55,16 @@
                                 <field name="employee_bonus" />
                                 <field name="employee_deduction" />
                                 <field name="present_vacation" />
+                                <field name="loan" readonly='True' />
                             </group>
                             <group>
                                 <field name="net_salary" />
                             </group>
+                            <notebook>
+                                <page string='Loans'>
+                                    <field name="loan_id" readonly='True' />
+                                </page>
+                            </notebook>
                         </group>
                     </sheet>
                 </form>
@@ -92,7 +103,7 @@
             <field name="model_id" ref='model_employee_payroll' />
             <field name="groups"
                 eval="[(4,ref('hr_system.employee_perm_group')),(4,ref('hr_system.manager_perm_group'))]" />
-            <field name="domain_force">[('employee_id.user_account','=',user.id)]</field>
+            <field name="domain_force">[('employee_id.related_user','=',user.id)]</field>
         </record>
     </data>
 </odoo>

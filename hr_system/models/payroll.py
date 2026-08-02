@@ -1,5 +1,6 @@
 from odoo import models, fields, api
 import calendar
+from dateutil.relativedelta import relativedelta
 
 
 class Payroll(models.Model):
@@ -36,8 +37,36 @@ class Payroll(models.Model):
     employee_bonus = fields.Float()
     employee_deduction = fields.Float()
     week_end_day = fields.Integer()
+    loan = fields.Float()
+    loan_id = fields.Many2many('employee.loan')
     present_vacation = fields.Float(
         compute="employee_net_salary_calc", store=True)
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        res = super().create(vals_list)
+        end_of_month = (fields.Date.today()+relativedelta(months=1)
+                        ).replace(day=1)-relativedelta(days=1)
+        for rec in res:
+            employee_loan = self.env['employee.loan'].search(
+                [('employee_id', '=', rec.employee_id.id), ('loan_state', '=', 'approved'), ('start_loan_month', '<=', end_of_month)])
+            if employee_loan:
+                for loan in employee_loan:
+                    rec.loan_id = [(4, loan.id)]
+                    rec.loan += loan.loan_amount / loan.loan_repayment_period
+                    loan.remaining_amount -= loan.loan_amount / loan.loan_repayment_period
+                    if loan.remaining_amount == 0:
+                        loan.loan_state = 'paid'
+        return res
+
+    @api.model
+    def unlink(self):
+        for rec in self:
+            if rec.loan > 0:
+                for loan in rec.loan_id:
+                    loan.loan_state = 'approved'
+                    loan.remaining_amount += loan.loan_amount/loan.loan_repayment_period
+        return super().unlink()
 
     @api.depends("employee_id", "month", "employee_bonus", "employee_deduction")
     def employee_net_salary_calc(self):
@@ -73,6 +102,7 @@ class Payroll(models.Model):
                     - rec.employee_deduction
                     + rec.employee_bonus
                     + paid_leave
+                    - rec.loan
                 )
             else:
                 rec.present_vacation = 0
@@ -86,3 +116,9 @@ class Payroll(models.Model):
                         "employee_id": rec.id,
                     }
                 )
+
+    def unlink_all_payrolls(self):
+        records = self.env["employee.payroll"].search(
+            [('month', '=', fields.Date.today().month), ('year', '=', fields.Date.today().year)])
+        if records:
+            records.unlink()
