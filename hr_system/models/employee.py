@@ -1,6 +1,10 @@
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
-from enum import Enum
+import calendar
+
+from datetime import datetime, time
+
+from odoo.tools import relativedelta
 
 
 class Employee(models.Model):
@@ -75,6 +79,13 @@ class Employee(models.Model):
         compute="week_end_list",
         store=True,
     )
+    state_in = fields.Selection([
+        ('present', 'Present (by default)'),
+        ('in', 'In'),
+        ('out', 'Out'),
+        ('yet_to_check_in', 'Yet To Check In'),
+        ('weekend', 'Weekend'),
+    ], default=lambda self: 'present' if self.employee_role == 'owner' else 'yet_to_check_in')
 
     def unlink(self):
         users_to_delete = self.env['res.users'].search(
@@ -199,3 +210,43 @@ class Employee(models.Model):
         action['res_id'] = my_profile
         action['views'] = [[view_id, 'form']]
         return action
+
+    def check_employee_state(self):
+        employees_ids = self.env['employee'].search([])
+        for rec in employees_ids:
+            if rec.state_in not in ['present', 'in']:
+                roles_mapping = {
+                    'owner': 'present',
+                    'employee': 'yet_to_check_in',
+                    'hr': 'yet_to_check_in',
+                    'manager': 'yet_to_check_in',
+                }
+                week_end_days = next(
+                    (k for k, v in rec.weekend.items() if v == True), False)
+                if week_end_days:
+                    today = datetime.now()
+                    day_number = calendar.weekday(
+                        today.year, today.month, today.day)
+                    if str(day_number) in week_end_days:
+                        rec.state_in = 'weekend'
+                else:
+                    rec.state_in = roles_mapping[rec.employee_role]
+        self._reschedule_next_midnight()
+
+    def _reschedule_next_midnight(self):
+        cron = self.env.ref('hr_system.employee_in_state_cron',
+                            raise_if_not_found=False)
+        if not cron:
+            return
+        now_utc = datetime.utcnow()
+        next_run = now_utc.replace(hour=21, minute=0, second=0, microsecond=0)
+        if now_utc >= next_run:
+            next_run += relativedelta(days=1)
+        cron.sudo().write({'nextcall': next_run})
+        print('done')
+
+    def check_in_to_employee(self):
+        pass
+
+    def check_out_to_employee(self):
+        pass

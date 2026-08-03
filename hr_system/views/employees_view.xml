@@ -70,6 +70,13 @@
                                 <h1>
                                     <field name="id" invisible='id==0' />
                                 </h1>
+                                <label for='state_in' string='' />
+                                <h3>
+                                    <field name="state_in"
+                                        decoration-success='state_in in ["in","present"]'
+                                        decoration-danger='state_in in ["out","yet_to_check_in"]'
+                                        decoration-info='state_in == "weekend"' />
+                                </h3>
                             </div>
                         </header>
                         <group>

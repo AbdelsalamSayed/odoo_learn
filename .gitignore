@@ -1,0 +1,10 @@
+--pycache--/
+*.pyc
+
+.vdcode/
+.idea
+
+.DS_Store
+Thumbs.db
+
+*.log
