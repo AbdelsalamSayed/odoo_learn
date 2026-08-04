@@ -102,7 +102,7 @@ class Employee(models.Model):
             if len(self.env['employee'].search([('related_user.id', '=', rec.related_user.id)])) > 1:
                 raise ValidationError(
                     'This user account already has an employee account')
-            if rec.employee_role not in ["owner"] and not res.employee_manager:
+            if rec.employee_role not in ["owner"] and not rec.employee_manager:
                 raise ValidationError("You must enter employee manager")
         return res
 
@@ -115,12 +115,6 @@ class Employee(models.Model):
                         "This user account is already linked to an employee")
         return res
 
-    @api.depends(
-        "employee_shift_from",
-        "employee_shift_to",
-        "employee_shift_from_period",
-        "employee_shift_to_period",
-    )
     @api.depends('employee_shift_from', 'employee_shift_to', 'employee_shift_from_period', 'employee_shift_to_period')
     def _compute_shift_hours(self):
         for rec in self:
@@ -231,22 +225,3 @@ class Employee(models.Model):
                         rec.state_in = 'weekend'
                 else:
                     rec.state_in = roles_mapping[rec.employee_role]
-        self._reschedule_next_midnight()
-
-    def _reschedule_next_midnight(self):
-        cron = self.env.ref('hr_system.employee_in_state_cron',
-                            raise_if_not_found=False)
-        if not cron:
-            return
-        now_utc = datetime.utcnow()
-        next_run = now_utc.replace(hour=21, minute=0, second=0, microsecond=0)
-        if now_utc >= next_run:
-            next_run += relativedelta(days=1)
-        cron.sudo().write({'nextcall': next_run})
-        print('done')
-
-    def check_in_to_employee(self):
-        pass
-
-    def check_out_to_employee(self):
-        pass

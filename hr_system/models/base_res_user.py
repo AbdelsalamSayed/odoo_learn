@@ -42,6 +42,26 @@ class Users(models.Model):
             })
         return res
 
+    def create_employee_button_action(self):
+        for rec in self:
+            if (rec.salary < 0):
+                raise ValidationError('salary must be greater than 0')
+            rec.write({
+                'groups_id': self.get_group_id(rec.role)
+            })
+            self.env['employee'].create({
+                'employee_name': rec.name,
+                'related_user': rec.id,
+                'employee_email': rec.login,
+                'department_id': rec.department.id,
+                'employee_role': rec.role,
+                'employee_manager': rec.manager.id,
+                'employee_basic_salary': rec.salary or 0,
+                'employee_image': rec.image_1920,
+                'employee_number': rec.mobile_number,
+                'employee_birth_date': rec.birth_date
+            })
+
     def unlink(self):
         employees_to_delete = self.env['employee'].search(
             [('related_user', 'in', self.ids)])

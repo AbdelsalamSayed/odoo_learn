@@ -1,20 +1,26 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_admin_departments,access_departments,model_departments,base.group_system,1,1,1,1
 access_admin_employee,access_general_employee,model_employee,base.group_system,1,1,1,1
+access_admin_res_user,access_res_user,model_res_users,base.group_system,1,1,1,1
+
 
 
 
 access_ceo_employee,access_general_employee,model_employee,hr_system.ceo_groups_record,1,1,1,1
-access_ceo_employee_attendance,access_employee_attendance,model_employee_attendance,hr_system.ceo_groups_record,1,1,1,0
+access_ceo_employee_attendance_logs,access_employee_attendance,model_employee_attendance_logs,hr_system.ceo_groups_record,1,1,1,0
+access_ceo_employee_attendance,access_employee_attendance,model_employee_attendance,hr_system.ceo_groups_record,1,1,1,1
 access_ceo_employee_payroll,access_employee_payroll,model_employee_payroll,hr_system.ceo_groups_record,1,1,1,1
 access_ceo_departments,access_departments,model_departments,hr_system.ceo_groups_record,1,1,1,1
 access_ceo_employee_loan,access_employee_loan,model_employee_loan,hr_system.ceo_groups_record,1,1,1,0
+access_ceo_res_user,access_res_user,model_res_users,hr_system.ceo_groups_record,1,1,1,1
+
 
 
 
 
 access_hr_employee,access_general_employee,model_employee,hr_system.hr_perm_group,1,1,1,1
-access_hr_employee_attendance,access_employee_attendance,model_employee_attendance,hr_system.hr_perm_group,1,1,1,0
+access_hr_employee_attendance_logs,access_employee_attendance,model_employee_attendance_logs,hr_system.hr_perm_group,1,1,1,0
+access_hr_employee_attendance,access_employee_attendance,model_employee_attendance,hr_system.hr_perm_group,1,1,1,1
 access_hr_employee_payroll,access_employee_payroll,model_employee_payroll,hr_system.hr_perm_group,1,1,1,1
 access_hr_departments,access_departments,model_departments,hr_system.hr_perm_group,1,1,1,0
 access_hr_employee_loan,access_employee_loan,model_employee_loan,hr_system.hr_perm_group,1,1,1,0
@@ -23,6 +29,7 @@ access_hr_res_user,access_res_user,model_res_users,hr_system.hr_perm_group,1,1,1
 
 
 access_manager_employee,access_general_employee,model_employee,hr_system.manager_perm_group,1,0,0,0
+access_manager_employee_attendance_logs,access_employee_attendance,model_employee_attendance_logs,hr_system.manager_perm_group,1,0,1,0
 access_manager_employee_attendance,access_employee_attendance,model_employee_attendance,hr_system.manager_perm_group,1,1,1,0
 access_manager_employee_payroll,access_employee_payroll,model_employee_payroll,hr_system.manager_perm_group,1,0,0,0
 access_manager_employee_loan,access_employee_loan,model_employee_loan,hr_system.manager_perm_group,1,1,1,0
@@ -30,7 +37,8 @@ access_manager_employee_loan,access_employee_loan,model_employee_loan,hr_system.
 
 
 
-access_employee_attendance,access_employee_attendance,model_employee_attendance,hr_system.employee_perm_group,1,0,0,0
+access_employee_attendance_logs,access_employee_attendance,model_employee_attendance_logs,hr_system.employee_perm_group,1,0,0,0
+access_employee_attendance,access_employee_attendance,model_employee_attendance,hr_system.employee_perm_group,1,1,1,0
 access_employee_payroll,access_employee_payroll,model_employee_payroll,hr_system.employee_perm_group,1,0,0,0
 access_employee,access_employee,model_employee,hr_system.employee_perm_group,1,0,0,0
 access_employee_loan,access_employee_loan,model_employee_loan,hr_system.employee_perm_group,1,1,1,0

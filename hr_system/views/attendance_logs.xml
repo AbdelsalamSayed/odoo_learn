@@ -2,61 +2,22 @@
     <data>
         <record id="attendance_view_tree" model="ir.ui.view">
             <field name="name">attendance_view_tree</field>
-            <field name="model">employee.attendance</field>
+            <field name="model">employee.attendance.logs</field>
             <field name="arch" type="xml">
                 <tree>
                     <field name="employee_id" />
-                    <field name="log_date" />
-                    <field name="employee_shift_hours" />
+                    <field name="log_time" />
+                    <field name='log_type' />
+                    <field name="is_weekend" />
                 </tree>
-            </field>
-        </record>
-        <record id="attendance_view_form" model="ir.ui.view">
-            <field name="name">attendance_view_form</field>
-            <field name="model">employee.attendance</field>
-            <field name="arch" type="xml">
-                <form>
-                    <sheet>
-                        <group>
-                            <group>
-                                <field name="employee_id" />
-                                <field name="log_date" />
-                                <label for='employee_shift_from' string='Shift' />
-                                <div class='o_row'>
-                                    <label for='employee_shift_from' string='From' />
-                                    <field name="employee_shift_from" widget='float_time' />
-                                    <field name="employee_shift_from_period" />
-                                    <label for='employee_shift_to' string='To' widget='float_time' />
-                                    <field name="employee_shift_to" />
-                                    <field name="employee_shift_to_period" />
-                                    <field name="is_weekend" />
-                                </div>
-                                <field name="employee_shift_hours" />
-                            </group>
-                        </group>
-                    </sheet>
-                </form>
-            </field>
-        </record>
-        <record id="attendance_view_search" model="ir.ui.view">
-            <field name="name">attendance view search</field>
-            <field name="model">employee.attendance</field>
-            <field name="arch" type="xml">
-                <search>
-                    <field name="employee_id"
-                        groups='hr_system.ceo_groups_record,hr_system.hr_perm_group,hr_system.manager_perm_group' />
-                    <field name="log_date" />
-                    <filter name="log_date" string="Group by Date"
-                        context="{'group_by': 'log_date'}" />
-                </search>
             </field>
         </record>
         <record id='attendance_logs_action' model='ir.actions.act_window'>
             <field name="name">Attendance</field>
-            <field name="res_model">employee.attendance</field>
+            <field name="res_model">employee.attendance.logs</field>
         </record>
         <menuitem id='attendance_logs'
-            name='Attendance'
+            name='Employees Attendance'
             parent='hr_system_main_menu'
             action='attendance_logs_action'
             groups='hr_system.ceo_groups_record,hr_system.hr_perm_group,hr_system.manager_perm_group'

@@ -85,7 +85,7 @@ class Payroll(models.Model):
                                 int(rec.year), int(rec.month), days
                             ) == int(day):
                                 weekend_days += 1
-                for log in self.env['employee.attendance'].search([('employee_id', '=', rec.employee_id.id)]):
+                for log in self.env['employee.attendance.logs'].search([('employee_id', '=', rec.employee_id.id)]):
                     if str(log.log_date.month) == rec.month:
                         worked_hours += log.employee_shift_hours
                     if log.is_weekend:
