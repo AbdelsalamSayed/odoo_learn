@@ -4,12 +4,66 @@
             <field name="name">attendance_view_tree</field>
             <field name="model">employee.attendance.logs</field>
             <field name="arch" type="xml">
-                <tree>
+                <tree decoration-warning='is_weekend' decoration-danger='is_late and not is_weekend'>
                     <field name="employee_id" />
-                    <field name="log_time" />
-                    <field name='log_type' />
-                    <field name="is_weekend" />
+                    <field name="in_time" />
+                    <field name="out_time" />
+                    <field name="start_shift" />
+                    <field name="worked_hours" />
+                    <field name="is_weekend" invisible='True' optional='True' />
+                    <field name="is_late" invisible='True' optional='True' />
                 </tree>
+            </field>
+        </record>
+        <record id="employee_attendance_logs_view_form" model="ir.ui.view">
+            <field name="name">employee.attendance.logs.view.form</field>
+            <field name="model">employee.attendance.logs</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <button type='object' name='default_shift_shift' string='Get employee shift'
+                            display='always' />
+                    </header>
+                    <sheet>
+                        <header>
+                            <group>
+                                <group>
+                                    <label for='employee_id' />
+                                    <h1>
+                                        <field name="employee_id" />
+                                    </h1>
+                                </group>
+                                <group>
+                                    <label for='worked_hours' />
+                                    <h3>
+                                        <field name="worked_hours" widget='float_time' />
+                                    </h3>
+                                </group>
+                            </group>
+                        </header>
+                        <group>
+                            <group>
+                                <group string="Basic Shift Start Time">
+                                    <field name="start_shift" />
+                                </group>
+                                <group string="Log IN Time">
+                                    <field name="in_time" />
+                                </group>
+                            </group>
+                            <div
+                                style='height: 120px; width: 5px; background-color: #121212; border-radius: 100px; '>
+                            </div>
+                            <group>
+                                <group string="Basic Shift End Time">
+                                    <field name="end_shift" />
+                                </group>
+                                <group string="Log OUT Time">
+                                    <field name="out_time" />
+                                </group>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
             </field>
         </record>
         <record id='attendance_logs_action' model='ir.actions.act_window'>
@@ -37,5 +91,4 @@
                 ['|',('employee_id.related_user','=',user.id),('employee_id.employee_manager.related_user','=',user.id)]</field>
         </record>
     </data>
-
 </odoo>

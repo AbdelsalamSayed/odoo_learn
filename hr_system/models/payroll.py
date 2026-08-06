@@ -1,6 +1,7 @@
 from odoo import models, fields, api
 import calendar
 from dateutil.relativedelta import relativedelta
+from datetime import datetime
 
 
 class Payroll(models.Model):
@@ -72,11 +73,31 @@ class Payroll(models.Model):
     def employee_net_salary_calc(self):
         for rec in self:
             if rec.employee_id:
-                worked_hours = 0
+                now = fields.datetime.now()
+                rec.present_vacation = 0
+                total_worked_hours = 0
                 weekend_days = 0
-                present_vacation_days = 0
-                for day in rec.employee_id.weekend:
-                    if rec.employee_id.weekend[day]:
+                hour_price = rec.basic_salary / \
+                    calendar.monthrange(now.year, now.month)[
+                        1]/rec.employee_shift_hours
+                first_day_in_month = datetime(now.year, now.month, 1, 0, 0, 0)
+                last_day = calendar.monthrange(now.year, now.month)[1]
+                last_day_in_month = datetime(
+                    now.year, now.month, last_day, 23, 59, 59)
+                my_logs = self.env['employee.attendance.logs'].search(
+                    [('employee_id', '=', rec.employee_id.id), ('in_time', '>=', first_day_in_month), ('in_time', '<=', last_day_in_month)])
+                for log in my_logs:
+                    total_worked_hours += int(
+                        log.salary_hours) + (((log.salary_hours-int(log.salary_hours))*100)/60)
+                    rec.total_worked_hours += log.worked_hours
+                    if log.is_weekend:
+                        rec.present_vacation += log.salary_hours * hour_price
+                rec.net_salary = total_worked_hours * hour_price + \
+                    rec.employee_bonus - rec.employee_deduction - rec.loan
+                week_end_days = next(
+                    (k for k, v in rec.employee_id.weekend.items() if v == True), False)
+                if week_end_days:
+                    for day in week_end_days:
                         for days in range(
                             1, calendar.monthrange(
                                 int(rec.year), int(rec.month))[1] + 1
@@ -85,25 +106,8 @@ class Payroll(models.Model):
                                 int(rec.year), int(rec.month), days
                             ) == int(day):
                                 weekend_days += 1
-                for log in self.env['employee.attendance.logs'].search([('employee_id', '=', rec.employee_id.id)]):
-                    if str(log.log_date.month) == rec.month:
-                        worked_hours += log.employee_shift_hours
-                    if log.is_weekend:
-                        present_vacation_days += 1
-                hour_price = rec.basic_salary / 30 / rec.employee_shift_hours
-                rec.week_end_day = weekend_days
-                paid_leave = weekend_days * rec.employee_shift_hours * hour_price
-                rec.present_vacation = (
-                    hour_price * rec.employee_shift_hours * present_vacation_days
-                )
-                rec.total_worked_hours = worked_hours
-                rec.net_salary = (
-                    hour_price * rec.total_worked_hours
-                    - rec.employee_deduction
-                    + rec.employee_bonus
-                    + paid_leave
-                    - rec.loan
-                )
+                rec.net_salary += weekend_days * \
+                    (rec.employee_id.employee_shift_hours * hour_price)
             else:
                 rec.present_vacation = 0
 

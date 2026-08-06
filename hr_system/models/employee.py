@@ -2,9 +2,7 @@ from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 import calendar
 
-from datetime import datetime, time
-
-from odoo.tools import relativedelta
+from datetime import datetime
 
 
 class Employee(models.Model):
@@ -104,6 +102,9 @@ class Employee(models.Model):
                     'This user account already has an employee account')
             if rec.employee_role not in ["owner"] and not rec.employee_manager:
                 raise ValidationError("You must enter employee manager")
+            self.env['employee.attendance'].create({
+                'employee_id': rec.id
+            })
         return res
 
     def write(self, vals):
@@ -129,22 +130,23 @@ class Employee(models.Model):
             1, 13
         ) or employee_shift_to not in range(1, 13):
             raise ValidationError("enter valid shift period")
-        if employee_shift_from_period == employee_shift_to_period:
-            if employee_shift_from < employee_shift_to:
-                employee_shift_hours = (
-                    employee_shift_to - employee_shift_from
-                )
-            else:
-                employee_shift_hours = (
-                    12 - employee_shift_from + 12 + employee_shift_to
-                )
-        else:
-            employee_shift_hours = (
-                12 - employee_shift_from + employee_shift_to
-            )
+        shift_from_24_system = employee_shift_from
+        if employee_shift_from_period == 'pm' and employee_shift_from < 12:
+            shift_from_24_system += 12
+        elif employee_shift_from_period == 'am' and employee_shift_from == 12:
+            shift_from_24_system = 0
+
+        shift_to_24_system = employee_shift_to
+        if employee_shift_to_period == 'pm' and employee_shift_to < 12:
+            shift_to_24_system += 12
+        elif employee_shift_to_period == 'am' and employee_shift_to == 12:
+            shift_to_24_system = 0
+        employee_shift_hours = shift_to_24_system-shift_from_24_system
+        if employee_shift_hours < 0:
+            return employee_shift_hours + 24
         return employee_shift_hours
 
-    @api.onchange('related_user')
+    @api.depends('related_user')
     def related_user_details_compute(self):
         for rec in self:
             rec.employee_image = rec.related_user.image_1920
@@ -201,6 +203,19 @@ class Employee(models.Model):
         action = self.env['ir.actions.actions']._for_xml_id(
             'hr_system.employee_model_view_action')
         view_id = self.env.ref('hr_system.employee_form_view').id
+        action['res_id'] = my_profile
+        action['views'] = [[view_id, 'form']]
+        return action
+
+    def open_my_attendance_profile(self):
+        my_profile = self.env['employee.attendance'].search(
+            [('related_user', '=', self.env.user.id)]).id
+        if not my_profile:
+            raise ValidationError("No attendance page linked to your user account. "
+                                  "Please contact HR.")
+        action = self.env['ir.actions.actions']._for_xml_id(
+            'hr_system.attendance_action')
+        view_id = self.env.ref('hr_system.employee_attendance_view_form').id
         action['res_id'] = my_profile
         action['views'] = [[view_id, 'form']]
         return action

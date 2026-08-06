@@ -7,41 +7,53 @@
                 <form create='0' edit='0' delete='0'>
                     <sheet>
                         <group>
+                            <field name="in_time" string='IN Time' />
                             <div colspan="2"
                                 style="width: 100%; display: flex; justify-content: center; align-items: center; gap: 15px; margin: 10px 0;">
                                 <div
-                                    style="background-color: #333333; color: #ffffff; padding: 8px 12px; border-radius: 8px;">
-                                    <field name="hours" />
-                                </div> : <div
-                                    style="background-color: #333333; color: #ffffff; padding: 8px 12px; border-radius: 8px;">
-                                    <field name="minutes" />
-                                </div> : <div
-                                    style="background-color: #333333; color: #ffffff; padding: 8px 12px; border-radius: 8px;">
-                                    <field name="seconds" />
+                                    class='o_row'
+                                    style="background-color: #121212; color: #ffffff; padding: 15px 20px; border-radius: 25px;">
+                                    <div class='d-flex flex-column align-items-center'>
+                                        <div
+                                            style="width: 100%; display: flex; justify-content: center; margin: 10px 0; background-color: #ffffff; border-radius: 15px;">
+                                            <h1>
+                                                <field name="employee_id" />
+                                            </h1>
+                                        </div>
+                                        <div class='o_row' style='margin: 10px 0;'>
+                                            <div
+                                                style="background-color: #333333; color: #ffffff; padding: 6px 12px; border-radius: 13px;">
+                                                <field name="hours" />
+                                            </div>
+                                            : <div
+                                                style="background-color: #333333; color: #ffffff; padding: 6px 12px; border-radius: 13px;">
+                                                <field name="minutes" />
+                                            </div>
+                                            : <div
+                                                style="background-color: #333333; color: #ffffff; padding: 6px 12px; border-radius: 13px;">
+                                                <field name="seconds" />
+                                            </div>
+                                            <div
+                                                style='margin: 0 10px;'>
+                                                <button type='object' name='check_out_to_employee'
+                                                    string='Check-out'
+                                                    class="btn btn-danger"
+                                                    style="border-radius: 8px; padding: 10px 20px;"
+                                                    invisible='employee_state in ["out","yet_to_check_in","weekend"]' />
+                                                <button type='object' name='check_in_to_employee'
+                                                    string='Check-In'
+                                                    class="btn btn-success"
+                                                    style="border-radius: 8px; padding: 10px 20px;"
+                                                    invisible='employee_state in ["in","present"]' />
+                                            </div>
+                                        </div>
+                                        <field
+                                            name="employee_state"
+                                            decoration-success='employee_state in ["in","present"]'
+                                            decoration-danger='employee_state in ["out","yet_to_check_in"]'
+                                            decoration-warning='employee_state == "weekend"' />
+                                    </div>
                                 </div>
-                                <div>
-                                    <button type='object' name='check_out_to_employee'
-                                        string='Check-out'
-                                        class="btn btn-danger"
-                                        style="border-radius: 8px; padding: 10px 20px;"
-                                        invisible='employee_state in ["out","yet_to_check_in"]' />
-                                    <button type='object' name='check_in_to_employee'
-                                        string='Check-In'
-                                        class="btn btn-success"
-                                        style="border-radius: 8px; padding: 10px 20px;"
-                                        invisible='employee_state in ["in","present"]' />
-                                </div>
-                            </div>
-                            <div>
-                                <h1>
-                                    <field name="employee_id" />
-                                </h1>
-                                <h3>
-                                    <field name="employee_state"
-                                        decoration-success='employee_state in ["in","present"]'
-                                        decoration-danger='employee_state in ["out","yet_to_check_in"]'
-                                        decoration-info='employee_state == "weekend" ' />
-                                </h3>
                             </div>
                         </group>
                     </sheet>
@@ -54,11 +66,6 @@
             <field name="view_mode">form</field>
             <field name="view_id" ref='hr_system.employee_attendance_view_form' />
         </record>
-        <menuitem id='attendance_in_out'
-            name='Attendance'
-            parent='hr_system_main_menu'
-            action='attendance_action'
-            sequence='20' />
     </data>
 
 </odoo>

@@ -51,7 +51,7 @@
                             invisible='loan_state in ["paid","pending","approved"]' />
                         <widget name='web_ribbon' title='approved' bg_color='text-bg-success'
                             invisible='loan_state in ["paid","rejected","pending"]' />
-                        <widget name='web_ribbon' title='Pending' bg_color='text-bg-info'
+                        <widget name='web_ribbon' title='Pending' bg_color='text-bg-warning'
                             invisible='loan_state in ["paid","rejected","approved"]' />
                         <widget name='web_ribbon' title='Paid' bg_color='text-bg-primary'
                             invisible='loan_state in ["rejected","pending","approved"]' />

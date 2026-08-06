@@ -9,6 +9,9 @@
                     <header>
                         <button type='object' name='open_my_profile' string='My Profile'
                             display='always' icon='fa-user-circle' />
+                        <button type='object' name='open_my_attendance_profile'
+                            string='Check-in/out'
+                            display='always' icon='fa-user-circle' />
                     </header>
                     <field name="employee_image" options='{"size":[60,60]}'
                         widget='image' />
@@ -75,7 +78,7 @@
                                     <field name="state_in"
                                         decoration-success='state_in in ["in","present"]'
                                         decoration-danger='state_in in ["out","yet_to_check_in"]'
-                                        decoration-info='state_in == "weekend"' />
+                                        decoration-warning='state_in == "weekend"' />
                                 </h3>
                             </div>
                         </header>

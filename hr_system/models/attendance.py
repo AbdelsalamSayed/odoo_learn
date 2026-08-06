@@ -1,73 +1,54 @@
 from odoo import models, fields, api
 
 
-class EmployeeAttendance(models.TransientModel):
+class EmployeeAttendance(models.Model):
     _name = 'employee.attendance'
 
     _rec_name = 'employee_id'
-    employee_id = fields.Many2one('employee', default=lambda self: self.env['employee'].search(
-        [('related_user', '=', self.env.user.id)]), limit=1, readonly=True)
+    employee_id = fields.Many2one('employee', readonly=True)
+    related_user = fields.Many2one(
+        'res.users', related='employee_id.related_user')
     employee_state = fields.Selection([], related='employee_id.state_in')
-    hours = fields.Integer(
-        default=lambda self: self._default_hours_calc(), readonly=True)
-    minutes = fields.Integer(
-        default=lambda self: self._default_minutes_calc(), readonly=True)
-    seconds = fields.Integer(
-        default=lambda self: self._default_seconds_calc(), readonly=True)
+    in_time = fields.Datetime()
+    out_time = fields.Datetime()
+    hours = fields.Char(compute='_compute_time_calc')
+    minutes = fields.Char(compute='_compute_time_calc')
+    seconds = fields.Char(compute='_compute_time_calc')
 
     def check_in_to_employee(self):
         for rec in self:
             rec.employee_id.sudo().state_in = 'in'
-            self.env['employee.attendance.logs'].sudo().create({
-                'employee_id': rec.employee_id.id,
-                'log_time': fields.Datetime.now(),
-                'log_type': 'in'
-            })
+            rec.in_time = fields.Datetime.now()
 
     def check_out_to_employee(self):
         for rec in self:
             rec.employee_id.sudo().state_in = 'out'
+            rec.out_time = fields.Datetime.now()
+            time = rec.out_time - rec.in_time
+            total_seconds = int(time.total_seconds())
+            hours = total_seconds // 3600
+            minutes = (total_seconds % 3600)//60
             self.env['employee.attendance.logs'].sudo().create({
                 'employee_id': rec.employee_id.id,
-                'log_time': fields.Datetime.now(),
-                'log_type': 'out'
+                'in_time': rec.in_time,
+                'out_time': rec.out_time,
             })
+            rec.in_time = False
+            rec.out_time = False
 
-    def _default_hours_calc(self):
-        print(self.employee_id.id)
-        print(self)
-        print('vhdjndbdjnvdjbjkdzb')
-        last_in = self.env['employee.attendance.logs'].search([
-            ('log_type', '=', 'in'), ('employee_id', '=', self.employee_id.id)
-        ], order='id desc', limit=1)
-        hours = 0
-        if last_in:
-            print(last_in)
-            now = fields.Datetime.now()-last_in.log_time
-            total_seconds = int(now.total_seconds())
-            hours = total_seconds // 3600
-        return hours
-
-    def _default_minutes_calc(self):
-        last_in = self.env['employee.attendance.logs'].search([
-            ('log_type', '=', 'in'), ('employee_id', '=', self.employee_id.id)
-        ], order='id desc', limit=1)
-        minutes = 0
-        if last_in:
-            print(last_in)
-            now = fields.Datetime.now()-last_in.log_time
-            total_seconds = int(now.total_seconds())
-            minutes = (total_seconds % 3600)//60
-        return minutes
-
-    def _default_seconds_calc(self):
-        last_in = self.env['employee.attendance.logs'].search([
-            ('log_type', '=', 'in'), ('employee_id', '=', self.employee_id.id)
-        ], order='id desc', limit=1)
-        seconds = 0
-        if last_in:
-            print(last_in)
-            now = fields.Datetime.now()-last_in.log_time
-            total_seconds = int(now.total_seconds())
-            seconds = total_seconds % 60
-        return seconds
+    @api.depends('employee_id', 'employee_state', 'in_time', 'hours', 'minutes', 'seconds')
+    def _compute_time_calc(self):
+        for rec in self:
+            if rec.employee_state == 'in':
+                time = fields.Datetime.now() - rec.in_time
+                total_seconds = int(time.total_seconds())
+                hours = total_seconds//3600
+                minutes = total_seconds % 3600//60
+                seconds = total_seconds % 60
+                rec.hours = f'{hours:02d}'
+                rec.minutes = f'{minutes:02d}'
+                rec.seconds = f'{seconds:02d}'
+                continue
+            rec.hours = '00'
+            rec.minutes = '00'
+            rec.seconds = '00'
