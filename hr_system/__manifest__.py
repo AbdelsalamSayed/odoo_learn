@@ -18,10 +18,5 @@
         "views/payroll_view.xml",
         "views/res_user_view.xml",
     ],
-    'assets': {
-        'web.assets_backend': [
-            'hr_system/static/src/ls/attendance_time.js',
-        ],
-    },
     "application": True,
 }

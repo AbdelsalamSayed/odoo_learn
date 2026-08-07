@@ -181,7 +181,7 @@ class Employee(models.Model):
                     'manager': 'yet_to_check_in',
                 }
                 week_end_days = [
-                    (k for k, v in rec.weekend.items() if v == True)]
+                    k for k, v in rec.weekend.items() if v == True]
                 if week_end_days:
                     today = datetime.now()
                     day_number = calendar.weekday(

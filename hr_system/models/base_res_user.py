@@ -25,7 +25,6 @@ class Users(models.Model):
             if (rec.salary < 0):
                 raise ValidationError('salary must be greater than 0')
             rec.write({
-                'password': '1234',
                 'groups_id': self.get_group_id(rec.role)
             })
             self.env['employee'].create({

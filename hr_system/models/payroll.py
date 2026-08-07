@@ -79,7 +79,6 @@ class Payroll(models.Model):
                         loan.loan_state = 'paid'
         return res
 
-    @api.model
     def unlink(self):
         for rec in self:
             if rec.loan > 0:
