@@ -102,15 +102,17 @@ class Employee(models.Model):
                     'This user account already has an employee account')
             if rec.employee_role not in ["owner"] and not rec.employee_manager:
                 raise ValidationError("You must enter employee manager")
-            self.env['employee.attendance'].create({
+            self.env['employee.attendance'].sudo().create({
                 'employee_id': rec.id
             })
         return res
 
     def write(self, vals):
         res = super(Employee, self).write(vals)
-        if 'related_user' in vals:
-            for rec in self:
+        for rec in self:
+            if rec.employee_role not in ["owner"] and not rec.employee_manager:
+                raise ValidationError("You must enter employee manager")
+            if 'related_user' in vals:
                 if self.env['employee'].search_count([('related_user.id', '=', rec.related_user.id)]) > 1:
                     raise ValidationError(
                         "This user account is already linked to an employee")
@@ -168,58 +170,6 @@ class Employee(models.Model):
             copy_weekend["6"] = True if rec.end_sun else False
             rec.weekend = copy_weekend
 
-    def open_attendance_logs(self):
-        action = self.env["ir.actions.actions"]._for_xml_id(
-            "hr_system.attendance_logs_action"
-        )
-        view_id = self.env.ref("hr_system.attendance_view_tree").id
-        action["domain"] = [
-            ("employee_id.related_user", "=", self.related_user.id)]
-        action["views"] = [[view_id, "tree"]]
-        return action
-
-    def open_payroll_logs(self):
-        action = self.env["ir.actions.actions"]._for_xml_id(
-            "hr_system.payroll_menu_action"
-        )
-        action["domain"] = [
-            ("employee_id.related_user", "=", self.related_user.id)]
-        return action
-
-    def open_loan_logs(self):
-        action = self.env["ir.actions.actions"]._for_xml_id(
-            "hr_system.employee_loan_action"
-        )
-        action["domain"] = [
-            ("employee_id.related_user", "=", self.related_user.id)]
-        return action
-
-    def open_my_profile(self):
-        my_profile = self.env['employee'].search(
-            [('related_user', '=', self.env.user.id)]).id
-        if not my_profile:
-            raise ValidationError("No employee record is linked to your user account. "
-                                  "Please contact HR.")
-        action = self.env['ir.actions.actions']._for_xml_id(
-            'hr_system.employee_model_view_action')
-        view_id = self.env.ref('hr_system.employee_form_view').id
-        action['res_id'] = my_profile
-        action['views'] = [[view_id, 'form']]
-        return action
-
-    def open_my_attendance_profile(self):
-        my_profile = self.env['employee.attendance'].search(
-            [('related_user', '=', self.env.user.id)]).id
-        if not my_profile:
-            raise ValidationError("No attendance page linked to your user account. "
-                                  "Please contact HR.")
-        action = self.env['ir.actions.actions']._for_xml_id(
-            'hr_system.attendance_action')
-        view_id = self.env.ref('hr_system.employee_attendance_view_form').id
-        action['res_id'] = my_profile
-        action['views'] = [[view_id, 'form']]
-        return action
-
     def check_employee_state(self):
         employees_ids = self.env['employee'].search([])
         for rec in employees_ids:
@@ -230,8 +180,8 @@ class Employee(models.Model):
                     'hr': 'yet_to_check_in',
                     'manager': 'yet_to_check_in',
                 }
-                week_end_days = next(
-                    (k for k, v in rec.weekend.items() if v == True), False)
+                week_end_days = [
+                    (k for k, v in rec.weekend.items() if v == True)]
                 if week_end_days:
                     today = datetime.now()
                     day_number = calendar.weekday(

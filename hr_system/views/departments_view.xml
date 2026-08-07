@@ -7,6 +7,7 @@
                 <tree>
                     <field name="department_name" />
                     <field name="employee_ids" widget='many2many_tags' />
+                    <field name="department_capacity" />
                 </tree>
             </field>
         </record>
@@ -19,10 +20,13 @@
                         <group>
                             <group>
                                 <field name="department_name" />
+                                <field name="department_capacity" />
                             </group>
-                            <group>
-                                <field name="employee_ids" widget='many2many_tags' />
-                            </group>
+                            <notebook>
+                                <page string="Employees">
+                                    <field name="employee_ids" />
+                                </page>
+                            </notebook>
                         </group>
                     </sheet>
                 </form>
@@ -33,9 +37,9 @@
             <field name='res_model'>departments</field>
         </record>
         <menuitem id='hr_departments_menu'
-            name='Departments'
-            parent='hr_system_main_menu'
+            name='Company departments'
+            parent='company_menu_item'
             action='departments_model_view_action'
-            sequence='14' />
+            sequence='5' />
     </data>
 </odoo>

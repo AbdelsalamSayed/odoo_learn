@@ -6,13 +6,6 @@
             <field name="model">employee</field>
             <field name="arch" type='xml'>
                 <tree create='0'>
-                    <header>
-                        <button type='object' name='open_my_profile' string='My Profile'
-                            display='always' icon='fa-user-circle' />
-                        <button type='object' name='open_my_attendance_profile'
-                            string='Check-in/out'
-                            display='always' icon='fa-user-circle' />
-                    </header>
                     <field name="employee_image" options='{"size":[60,60]}'
                         widget='image' />
                     <field name="id" string='Employee ID' />
@@ -44,28 +37,6 @@
             <field name="arch" type='xml'>
                 <form create='0'>
                     <sheet readonly='related_user == uid '>
-                        <div name='button_box' class='oe_button_box'>
-                            <button type='object' name='open_attendance_logs' string='attendance'
-                                icon='fa-solid fa-calendar'
-                                invisible='related_user != uid ' />
-                            <button type='object' name='open_payroll_logs' string='Payroll'
-                                icon='fa-money'
-                                invisible='related_user != uid' />
-                            <button type='object' name='open_loan_logs' string='Loan'
-                                icon='fa-university' invisible='related_user != uid' />
-                            <button type='object' name='open_attendance_logs' string='attendance'
-                                icon='fa-solid fa-calendar'
-                                invisible='related_user == uid'
-                                groups='hr_system.ceo_groups_record,hr_system.hr_perm_group' />
-                            <button type='object' name='open_payroll_logs' string='Payroll'
-                                icon='fa-money'
-                                invisible='related_user == uid'
-                                groups='hr_system.ceo_groups_record,hr_system.hr_perm_group' />
-                            <button type='object' name='open_loan_logs' string='Loan'
-                                icon='fa-university'
-                                invisible='related_user == uid'
-                                groups='hr_system.ceo_groups_record,hr_system.hr_perm_group' />
-                        </div>
                         <header>
                             <field name="employee_image" options='{"size":[60,60]}' widget='image' />
                             <div>
@@ -151,12 +122,26 @@
             <field name='res_model'>employee</field>
             <field name="view_mode">tree,form</field>
         </record>
+        <record
+            id='employee_department_model_view_action' model='ir.actions.act_window'>
+            <field name="name">Departments</field>
+            <field name='res_model'>employee</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'group_by': 'department_id'}</field>
+        </record>
         <menuitem
             id="employee_menu"
-            name="employees"
-            parent="hr_system_main_menu"
+            name="Employees"
+            parent="employees_main_menu_item"
             action="employee_model_view_action"
-            sequence="10" />
+            groups='hr_system.employee_perm_group,hr_system.hr_perm_group,hr_system.manager_perm_group'
+            sequence="1" />
+        <menuitem
+            id="employee_department_menu"
+            name="Employees department"
+            parent="company_menu_item"
+            action="employee_department_model_view_action"
+            sequence="1" />
 
     </data>
 </odoo>

@@ -6,7 +6,26 @@
             <field name="arch" type="xml">
                 <form create='0' edit='0' delete='0'>
                     <sheet>
+                        <header>
+                            <button type='object' name='open_my_profile' string='My Profile'
+                                display='always' icon='fa-id-badge' class='btn-primary' />
+                        </header>
+                        <div name='button_box' class='oe_button_box'>
+                            <button type='object' name='open_attendance_logs' string='attendance'
+                                icon='fa-solid fa-calendar'
+                                invisible='related_user != uid ' />
+                            <button type='object' name='open_bonus_logs' string='Bonus'
+                                icon='fa-star' invisible='related_user != uid' />
+                            <button type='object' name='open_overtime_logs' string='Overtime'
+                                icon='fa-hourglass-half' invisible='related_user != uid' />
+                            <button type='object' name='open_loan_logs' string='Loan'
+                                icon='fa-university' invisible='related_user != uid' />
+                            <button type='object' name='open_payroll_logs' string='Payroll'
+                                icon='fa-money'
+                                invisible='related_user != uid' />
+                        </div>
                         <group>
+                            <field name="related_user" invisible='1' />
                             <field name="in_time" string='IN Time' />
                             <div colspan="2"
                                 style="width: 100%; display: flex; justify-content: center; align-items: center; gap: 15px; margin: 10px 0;">
@@ -60,12 +79,27 @@
                 </form>
             </field>
         </record>
+        <record id="attendance_action_server" model="ir.actions.server">
+            <field name="name">attendance server action</field>
+            <field name="model_id" ref="model_employee_attendance" />
+            <field name="binding_model_id" ref="model_employee_attendance" />
+            <field name="state">code</field>
+            <field name="code">
+                action=model.open_my_attendance()
+            </field>
+        </record>
         <record id='attendance_action' model='ir.actions.act_window'>
             <field name="name">Attendance1</field>
             <field name="res_model">employee.attendance</field>
             <field name="view_mode">form</field>
             <field name="view_id" ref='hr_system.employee_attendance_view_form' />
         </record>
+        <menuitem
+            id="home_main_menu"
+            name="Home"
+            action="attendance_action_server"
+            parent="hr_system_main_menu"
+            sequence="1" />
     </data>
 
 </odoo>

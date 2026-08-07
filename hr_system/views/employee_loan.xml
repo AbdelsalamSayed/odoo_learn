@@ -29,7 +29,9 @@
                     <field name="loan_amount" />
                     <field name="loan_repayment_period" />
                     <field name="loan_state" readonly='True' />
-                    <field name="related_user" invisible='1' />
+                    <field name="remaining_amount" />
+                    <field name="related_user" invisible='1' optional='1' />
+
                 </tree>
             </field>
         </record>
@@ -39,14 +41,6 @@
             <field name="arch" type="xml">
                 <form edit='0'>
                     <sheet>
-                        <header>
-                            <div>
-                                <label for='employee_id' />
-                                <h1>
-                                    <field name="employee_id" readonly='True' />
-                                </h1>
-                            </div>
-                        </header>
                         <widget name='web_ribbon' title='Rejected' bg_color='text-bg-danger'
                             invisible='loan_state in ["paid","pending","approved"]' />
                         <widget name='web_ribbon' title='approved' bg_color='text-bg-success'
@@ -56,15 +50,19 @@
                         <widget name='web_ribbon' title='Paid' bg_color='text-bg-primary'
                             invisible='loan_state in ["rejected","pending","approved"]' />
                         <group>
-                            <field name="start_loan_month" />
-                            <field name="loan_amount" />
-                            <field name="loan_repayment_period" />
-                            <label for='loan_state' />
-                            <div class='o_row'>
-                                <field name="loan_state" readonly='True' />
-                                <label for='remaining_amount' />
+                            <group>
+                                <label for='employee_id' />
+                                <h1>
+                                    <field name="employee_id" />
+                                </h1>
+                                <field name="start_loan_month" />
+                                <field name="loan_repayment_period" />
+                            </group>
+                            <group>
+                                <field name="loan_amount" />
                                 <field name="remaining_amount" />
-                            </div>
+                            </group>
+                            <field name="loan_state" invisible='1' />
                         </group>
                     </sheet>
                 </form>
@@ -84,13 +82,19 @@
             <field name="name">employee loan</field>
             <field name="res_model">employee.loan</field>
             <field name="context">{'search_default_active_loans':1}</field>
+            <field name="domain">[('employee_id.related_user','=',uid)]</field>
+        </record>
+        <record id="all_employee_loan_action" model="ir.actions.act_window">
+            <field name="name">employee loan</field>
+            <field name="res_model">employee.loan</field>
+            <field name="context">{'search_default_active_loans':1}</field>
         </record>
         <menuitem id='manager_employee_loan_menu'
-            name='Loan'
-            parent='hr_system_main_menu'
-            action='employee_loan_action'
+            name='Employees loans'
+            parent='employees_main_menu_item'
+            action='all_employee_loan_action'
             groups='hr_system.ceo_groups_record,hr_system.hr_perm_group'
-            sequence='13'
+            sequence='3'
         />
         <record id='my_loan_rule' model='ir.rule'>
             <field name="name">My loan Rule</field>

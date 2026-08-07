@@ -75,7 +75,7 @@ class Users(models.Model):
         if 'role' in vals:
             for rec in self:
                 new_role = vals.get('role')
-                rec.write({
+                rec.sudo().write({
                     'groups_id': self.get_group_id(new_role)
                 })
         res = super().write(vals)

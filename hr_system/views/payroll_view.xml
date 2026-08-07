@@ -52,9 +52,10 @@
                                 <field name="total_worked_hours" />
                             </group>
                             <group>
-                                <field name="employee_bonus" />
+                                <field name="bonus_min" />
+                                <field name="overtime_min" />
                                 <field name="employee_deduction" />
-                                <field name="present_vacation" />
+                                <field name="present_vacation_days" />
                                 <field name="loan" readonly='True' />
                             </group>
                             <group>
@@ -90,13 +91,18 @@
         <record id='payroll_menu_action' model='ir.actions.act_window'>
             <field name="name">Payroll</field>
             <field name="res_model">employee.payroll</field>
+            <field name="domain">[('employee_id.related_user','=',uid)]</field>
+        </record>
+        <record id='all_payroll_menu_action' model='ir.actions.act_window'>
+            <field name="name">Payroll</field>
+            <field name="res_model">employee.payroll</field>
         </record>
         <menuitem id='payroll_menu'
-            name='Payroll'
-            parent='hr_system_main_menu'
-            action='payroll_menu_action'
+            name='Employees payrolls'
+            parent='employees_main_menu_item'
+            action='all_payroll_menu_action'
             groups='hr_system.ceo_groups_record,hr_system.hr_perm_group'
-            sequence='12'
+            sequence='4'
         />
         <record id='my_payroll_rule' model='ir.rule'>
             <field name="name">My Payroll Rule</field>

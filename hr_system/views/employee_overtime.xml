@@ -1,0 +1,120 @@
+<odoo>
+    <data>
+        <record id="employee_overtime_view_tree" model="ir.ui.view">
+            <field name="name">employee overtime view tree</field>
+            <field name="model">employee.overtime</field>
+            <field name="arch" type="xml">
+                <tree decoration-danger='overtime_state=="rejected"'
+                    decoration-success='overtime_state=="approved"'>
+                    <field name="employee_id" />
+                    <field name="overtime_day" />
+                    <field name="overtime_min" />
+                    <field name="overtime_state" />
+                </tree>
+            </field>
+        </record>
+        <record id="employee_overtime_view_form" model="ir.ui.view">
+            <field name="name">employee overtime view form</field>
+            <field name="model">employee.overtime</field>
+            <field name="arch" type="xml">
+                <form create='0'>
+                    <sheet>
+                        <header>
+                            <button type='object' name='submit_my_overtime' string='Request'
+                                class='btn-primary' invisible='overtime_state != "pending"' />
+                            <button type='object' name='employee_overtime_reject' string='Reject'
+                                class='btn-danger'
+                                invisible='overtime_state in ["pending","approved","rejected"] or related_user == uid and employee_role != "owner"'
+                                groups='hr_system.ceo_groups_record,hr_system.hr_perm_group' />
+                            <button type='object' name='employee_overtime_reject' string='Reject'
+                                class='btn-danger'
+                                invisible='overtime_state in ["pending","approved","rejected","wait_hr"] or related_user == uid and employee_role != "owner"'
+                                groups='hr_system.manager_perm_group' />
+                            <button type='object' name='employee_overtime_approve' string='Approve'
+                                class='btn-success'
+                                invisible='overtime_state != "wait_hr" or related_user == uid and employee_role != "owner"'
+                                groups='hr_system.ceo_groups_record,hr_system.hr_perm_group' />
+                            <button type='object' name='send_to_hr_overtime' string='Send To HR '
+                                class='btn-success'
+                                invisible='overtime_state != "wait_manager" or related_user == uid and employee_role != "owner"'
+                                groups='hr_system.ceo_groups_record,hr_system.hr_perm_group,hr_system.manager_perm_group' />
+                        </header>
+                        <group>
+                            <group>
+                                <label for='employee_id' />
+                                <h1>
+                                    <field name="employee_id" />
+                                </h1>
+                            </group>
+                            <group>
+                                <field name="overtime_day" />
+                                <field name="overtime_state" />
+                            </group>
+                            <label
+                                for='overtime_min' />
+                            <field name="overtime_min"
+                                groups='hr_system.ceo_groups_record,hr_system.manager_perm_group,hr_system.hr_perm_group'
+                                readonly='overtime_state != "wait_manager"' />
+                            <div class='o_row'>
+                                <h2 style='color: #ffa200;'>Note :</h2>
+                                <h2 style='color: #fb2b2b;'>please enter overtime min
+                                    before send it</h2>
+                            </div>
+                            <field name="related_user" invisible='1' />
+                            <field name="employee_role" invisible='1' />
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="employee_overtime_view_search" model="ir.ui.view">
+            <field name="name">employee.overtime.view.search</field>
+            <field name="model">employee.overtime</field>
+            <field name="arch" type="xml">
+                <search>
+                    <filter name="active_overtime" string="Active"
+                        domain="[('overtime_state', 'in', ['pending','wait_manager','wait_hr','approved'])]" />
+                </search>
+            </field>
+        </record>
+        <record id="employee_overtime_action" model="ir.actions.act_window">
+            <field name="name">employee overtime</field>
+            <field name="res_model">employee.overtime</field>
+            <field name="context">{'search_default_active_overtime':1}</field>
+            <field name="domain">[('employee_id.related_user.id','=',uid)]</field>
+        </record>
+        <record id="all_manager_employee_overtime_action" model="ir.actions.act_window">
+            <field name="name">employee overtime</field>
+            <field name="res_model">employee.overtime</field>
+            <field name="domain">[('employee_id.employee_manager.related_user.id','=',uid)]</field>
+            <field name="context">{'search_default_active_overtime':1}</field>
+        </record>
+        <record id="all_hr_ceo_employee_overtime_action" model="ir.actions.act_window">
+            <field name="name">employee overtime</field>
+            <field name="res_model">employee.overtime</field>
+            <field name="context">{'search_default_active_overtime':1}</field>
+
+        </record>
+        <menuitem id='ceo_employee_overtime_menu'
+            name='Employees overtime'
+            parent='employees_main_menu_item'
+            action='all_hr_ceo_employee_overtime_action'
+            groups='hr_system.ceo_groups_record,hr_system.hr_perm_group'
+            sequence='3'
+        />
+        <menuitem id='manager_employee_overtime_menu'
+            name='Employees overtime'
+            parent='employees_main_menu_item'
+            action='all_manager_employee_overtime_action'
+            groups='hr_system.manager_perm_group'
+            sequence='3'
+        />
+        <record id='my_overtime_rule' model='ir.rule'>
+            <field name="name">My overtime Rule</field>
+            <field name="model_id" ref='model_employee_overtime' />
+            <field name="groups"
+                eval="[(4,ref('hr_system.employee_perm_group'))]" />
+            <field name="domain_force">[('employee_id.related_user.id','=',user.id)]</field>
+        </record>
+    </data>
+</odoo>

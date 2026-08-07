@@ -25,27 +25,15 @@ class AttendanceLog(models.Model):
     worked_hours = fields.Float(compute='_compute_worked_hours')
     salary_hours = fields.Float(compute='_compute_salary_hours')
 
-    @api.model_create_multi
-    def create(self, vals):
-        res = super().create(vals)
-        for rec in res:
-            if not (rec.in_time and rec.out_time):
-                raise ValidationError("you must enter in-time and out-ime")
-            if rec.out_time < rec.in_time:
-                raise ValidationError("Out-time must be after in-time")
-        return res
-
-    @api.model
-    def write(self, vals):
-        res = super().write(vals)
+    @api.constrains('end_shift', 'start_shift', 'in_time', 'out_time')
+    def _check_shift_and_attendance(self):
         for rec in self:
             if not (rec.in_time and rec.out_time):
                 raise ValidationError("you must enter in-time and out-ime")
             if rec.out_time < rec.in_time:
                 raise ValidationError("Out-time must be after in-time")
-            if rec.end_shift < rec.start_shift:
+            if rec.end_shift <= rec.start_shift:
                 raise ValidationError("end_shift must be after start_shift")
-        return res
 
     @api.model
     def default_start_shift(self):
@@ -140,7 +128,6 @@ class AttendanceLog(models.Model):
 
     def default_shift_shift(self):
         for rec in self:
-
             end_shift = False
             start_shift = False
             if rec:
@@ -168,5 +155,9 @@ class AttendanceLog(models.Model):
                     pytz.utc).replace(tzinfo=None)
                 if end_shift < start_shift:
                     end_shift += timedelta(days=1)
-                rec.end_shift = end_shift
-                rec.start_shift = start_shift
+                this_rec = self.env['employee.attendance.logs'].search(
+                    [('id', '=', rec.id)])
+                this_rec.write({
+                    'start_shift': start_shift,
+                    'end_shift': end_shift
+                })
